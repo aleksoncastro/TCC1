@@ -1,0 +1,704 @@
+% !TeX root = main.tex
+\chapter{Metodologia e Desenvolvimento do Artefato}
+\label{cap:metodologia}
+
+Este capítulo detalha a metodologia de pesquisa empregada no trabalho e a especificação técnica do artefato desenvolvido. O projeto fundamenta-se nas diretrizes da \textit{Design Science Research} (DSR), orientando-se pela construção e avaliação sistemática de uma solução para o problema de controle de acesso a imóveis desocupados sem conectividade local. 
+
+A estrutura do capítulo divide-se em dez seções: a caracterização metodológica e o mapeamento das etapas do DSR; a contextualização e formalização do problema prático; a visão arquitetural em camadas; o modelo formal de autorização baseado em atributos (ABAC); o esquema criptográfico assimétrico para validação offline; o fluxo de ponta a ponta do sistema; a especificação da pilha tecnológica e do firmware; o ambiente de simulação virtual no Wokwi; os cenários de demonstração funcional; e o conjunto de métricas quantitativas adotadas para a avaliação experimental.
+
+% ============================================================
+\section{Caracterização Metodológica}
+\label{sec:dsr-caracterizacao}
+% ============================================================
+
+\subsection{Design Science Research como Paradigma de Pesquisa}
+\label{subsec:dsr-paradigma}
+
+A pesquisa científica em computação tradicionalmente divide-se entre abordagens explicativas ou descritivas (ciências naturais e comportamentais) e abordagens prescritivas ou de projeto (ciências do artificial). Enquanto as primeiras dedicam-se a observar, compreender e explicar fenômenos existentes, a \textit{Design Science Research} (DSR) foca na criação de artefatos tecnológicos projetados para solucionar problemas humanos e organizacionais concretos \cite{hevner2004}.
+
+De acordo com \citeonline{hevner2004}, a DSR combina rigor científico com relevância prática. O rigor manifesta-se no emprego de teorias fundamentadas, métodos consolidados de engenharia e procedimentos formais de avaliação extraídos da base de conhecimento existente. A relevância decorre da aplicabilidade direta da solução aos problemas enfrentados pelos atores no ambiente real de negócios. 
+
+Neste trabalho, o problema investigado decorre de limitações operacionais e brechas de segurança observadas na rotina de imobiliárias e corretores autônomos. A pesquisa prescinde de caráter puramente exploratório ou teórico; exige a concepção, implementação e validação empírica de um artefato funcional composto por modelos conceituais, protocolos criptográficos, firmware embarcado e infraestrutura de mensageria. A DSR fornece a estrutura formal necessária para estruturar esse processo construtivo e iterativo.
+
+\subsection{Mapeamento das Fases do DSR no Trabalho}
+\label{subsec:dsr-fases}
+
+O desenvolvimento do artefato segue o modelo de processo proposto por \citeonline{peffers2007}, composto por seis etapas sequenciais com suporte a ciclos de refinamento iterativo. O Quadro~\ref{quadro:mapeamento-dsr} detalha a correspondência entre cada fase conceitual e as atividades executadas no escopo desta pesquisa.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Mapeamento das etapas da Design Science Research ao projeto.}
+\label{quadro:mapeamento-dsr}
+\begin{tabularx}{\textwidth}{c p{4.2cm} X p{2.8cm}}
+\toprule
+\textbf{Fase} & \textbf{Etapa Conceitual \cite{peffers2007}} & \textbf{Materialização no Trabalho} & \textbf{Localização} \\
+\midrule
+1 & Identificação do Problema e Motivação & Mapeamento das falhas dos métodos físicos (chaves, cofres e senhas estáticas) em imóveis desocupados sem conexão à internet. & Seção~\ref{sec:problema-contexto} \\
+\addlinespace
+2 & Definição dos Objetivos da Solução & Definição dos requisitos funcionais, não funcionais e objetivos específicos (modelagem ABAC, protótipo funcional e avaliação empírica). & Seção~\ref{subsec:pilares-artefato} e Cap.~\ref{cap:introducao} \\
+\addlinespace
+3 & Concepção e Desenvolvimento do Artefato & Modelagem formal da arquitetura HABAC$\alpha$, implementação do esquema criptográfico Ed25519, codificação do firmware ESP32 e API FastAPI. & Seções~\ref{sec:arquitetura-geral} a \ref{sec:ambiente-simulacao} \\
+\addlinespace
+4 & Demonstração & Execução dos três cenários funcionais (concessão válida, rejeição de acessos anômalos e revogação emergencial) em bancada virtual. & Seção~\ref{sec:cenarios-teste} \\
+\addlinespace
+5 & Avaliação & Coleta e análise estatística de oito métricas quantitativas de desempenho temporal, memória e integridade de bloqueio. & Seção~\ref{sec:metricas-avaliacao} e Cap.~\ref{cap:resultados} \\
+\addlinespace
+6 & Comunicação & Redação da monografia de TCC, produção de diagramas técnicos e disseminação dos resultados obtidos. & Monografia completa \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelo autor (2026).}
+\end{table}
+
+A DSR prevê retornos iterativos entre as fases de avaliação e desenvolvimento. Desvios nas métricas de latência ou sobrecarga de memória identificados durante os ensaios de demonstração demandam ajustes na codificação do firmware ou na estrutura do payload de dados antes da consolidação final dos resultados.
+
+% ============================================================
+\section{Contexto e Formalização do Problema}
+\label{sec:problema-contexto}
+% ============================================================
+
+\subsection{O Cenário de Gestão de Visitas em Imóveis Desocupados}
+\label{subsec:cenario-imobiliario}
+
+No setor imobiliário, a comercialização e a locação de unidades habitacionais e comerciais apoiam-se na atuação de corretores parceiros e profissionais externos. Esses agentes realizam atendimentos a potenciais compradores, vistorias técnicas, serviços de manutenção predial e registros fotográficos.
+
+Ao contrário de residências habitadas, onde residem moradores capazes de franquear a entrada ou onde existe conexão de banda larga ativa, as unidades vagas apresentam características operacionais específicas:
+
+\begin{enumerate}
+    \item \textbf{Inexistência de rede de dados local:} Imobiliárias e proprietários não contratam planos de internet fixa para imóveis desocupados em virtude do custo financeiro desnecessário durante o período de vacância.
+    \item \textbf{Ausência de supervisão física:} Não há recepcionistas, porteiros ou moradores permanentes para fiscalizar a entrada ou monitorar a permanência no interior da propriedade.
+    \item \textbf{Pluralidade e rotatividade de atores:} Profissionais autônomos vinculados a diferentes imobiliárias parceiras necessitam de permissões dinâmicas de acesso, com janelas temporais curtas e sobrepostas.
+\end{enumerate}
+
+\subsection{Análise Crítica dos Métodos Convencionais no Contexto do Problema}
+\label{subsec:analise-critica-metodos}
+
+Os métodos comumente aplicados pelo mercado para franquear o acesso de corretores a unidades desocupadas revelam deficiências operacionais e de segurança, conforme sintetizado no Quadro~\ref{quadro:comparativo-metodos} (Seção~\ref{subsec:limitacoes-tradicionais}).
+
+Sob a ótica da primeira etapa do DSR (identificação e motivação do problema), essas limitações evidenciam que, embora as fechaduras conectadas comerciais resolvam a rastreabilidade e a revogação instantânea, elas dependem de conexão Wi-Fi contínua na residência. Em imóveis desprovidos de rede, tais equipamentos tornam-se inoperantes ou dependem de chaves metálicas mecânicas, anulando os benefícios digitais pretendidos e justificando o desenvolvimento do artefato proposto.
+
+\subsection{Definição do Problema e Questão de Pesquisa}
+\label{subsec:questao-pesquisa}
+
+A incapacidade dos mecanismos atuais de aliar operação desconectada, validação criptográfica pontual e auditoria confiável motiva a questão central de pesquisa formulada para este trabalho:
+
+\begin{quote}
+\textit{Como projetar e avaliar uma arquitetura de controle de acesso inteligente baseada em IoT capaz de gerenciar, de forma segura, rastreável e orientada a atributos (ABAC), o acesso temporário de múltiplos corretores parceiros a imóveis desocupados desprovidos de conexão à internet?}
+\end{quote}
+
+\subsection{Requisitos e Pilares de Concepção do Artefato}
+\label{subsec:pilares-artefato}
+
+Para resolver o problema formulado, o artefato estrutura-se sobre quatro pilares técnicos mandatórios:
+
+\begin{enumerate}
+    \item \textbf{Independência de infraestrutura local de rede (\textit{Zero Local Infrastructure}):} O nó eletrônico embarcado na porta do imóvel deve validar a credencial de acesso e acionar a trava eletromecânica sem consultar servidores remotos no instante do acionamento e sem exigir modems ou chips celulares (SIM/M2M) dedicados na placa.
+    \item \textbf{Autenticidade e não-repúdio da delegação:} A credencial deve ser pessoal, intransferível e vinculada ao smartphone cadastrado do corretor, impedindo o repasse de permissões a terceiros.
+    \item \textbf{Autorização granular por atributos contextuais (ABAC):} A permissão deve ser concedida mediante avaliação de condições lógicas estritas (horário comercial, situação cadastral do corretor, status do imóvel e existência de vistoria agendada).
+    \item \textbf{Rastreabilidade e sincronização assíncrona de eventos:} Todo acionamento ou tentativa frustrada de acesso deve gerar registros invioláveis de auditoria, sincronizados com a nuvem por meio do smartphone do usuário.
+\end{enumerate}
+
+% ============================================================
+\section{Arquitetura Geral do Artefato}
+\label{sec:arquitetura-geral}
+% ============================================================
+
+\subsection{Visão em Camadas do Ecossistema IoT}
+\label{subsec:arquitetura-camadas}
+
+Em conformidade com a taxonomia de sistemas IoT apresentada por \citeonline{vardakis2024}, a arquitetura divide-se em quatro camadas funcionais e físicas delimitadas:
+
+\begin{enumerate}
+    \item \textbf{Camada de Aplicação e Gestão:} Hospeda o painel administrativo da imobiliária (configuração de políticas e cadastro) e o aplicativo móvel do corretor (solicitação de acesso e recepção de credenciais).
+    \item \textbf{Camada de Serviço e Decisão:} Executada em ambiente de computação em nuvem, centraliza o motor de inferência ABAC(Controle de Acesso Baseado em Atributos), o módulo de assinatura criptográfica e o \textit{broker} de mensageria para ingestão de eventos.
+    \item \textbf{Camada de Rede e Transporte:} Abrange os protocolos de comunicação do sistema, compreendendo conexões celulares 4G/5G (HTTPS/REST) entre o aplicativo e a nuvem, o canal desconectado por leitura óptica (QR Code) entre smartphone e fechadura, e o protocolo MQTT(Protocolo de Mensageria Leve) com entrega garantida (QoS 1) para telemetria.
+    \item \textbf{Camada Física e de Percepção:} Reúne o microcontrolador ESP32 instalado na porta do imóvel, o relé que comanda a trava solenoide, os sinais de retorno ao usuário (LED e \textit{buzzer}) e o leitor responsável por capturar o payload do QR Code.
+\end{enumerate}
+
+\subsection{Componentes Arquiteturais e Responsabilidades}
+\label{subsec:componentes-arquiteturais}
+
+A Figura~\ref{fig:arquitetura-visao-geral} ilustra a topologia do sistema, evidenciando o desacoplamento entre a infraestrutura central de decisão e a unidade de execução local na porta do imóvel.
+
+\begin{figure}[htbp]
+\centering
+\caption{Visão geral da arquitetura do artefato IoT em ambiente desconectado.}
+\label{fig:arquitetura-visao-geral}
+\includegraphics[width=0.92\textwidth]{imagens/01_arquitetura_visao_geral.jpg}
+\fonte{Elaborado pelo autor (2026).}
+\end{figure}
+
+O ecossistema divide-se em três domínios físicos com responsabilidades bem delimitadas:
+
+\begin{itemize}
+    \item \textbf{Nuvem da Imobiliária:} Centraliza os serviços corporativos e a tomada de decisão. Abriga o Painel de Gestão (\textit{Policy Administration Point} -- PAP), o banco de atributos cadastrais (\textit{Policy Information Point} -- PIP), o motor de regras (\textit{Policy Decision Point} -- PDP em FastAPI), o módulo criptográfico detentor da chave privada Ed25519 e o broker de mensageria MQTT (Eclipse Mosquitto) para recepção das telemetrias de auditoria.
+    \item \textbf{Smartphone do Corretor:} Atua como elemento intermediário e portador (\textit{data mule/carrier}) de credenciais e telemetrias. Como o corretor dispõe de franquia de dados celulares (4G/5G), seu smartphone estabelece a ponte de comunicação entre a nuvem e o imóvel desocupado, requisitando o token pela internet e apresentando-o localmente por leitura óptica.
+    \item \textbf{Nó da Fechadura (ESP32):} Atua como Ponto de Execução de Políticas (\textit{Policy Enforcement Point} -- PEP) local. Opera em regime estritamente desconectado (\textit{zero local infrastructure}), desprovido de conexão Wi-Fi ou modem celular. Armazena exclusivamente a chave pública da autoridade emissora em memória permanente protegida, garantindo que mesmo o furto do hardware não exponha segredos criptográficos capazes de forjar acessos.
+\end{itemize}
+
+A interação entre os três domínios cumpre um ciclo operacional composto por seis etapas numeradas:
+
+\begin{enumerate}
+    \item \textbf{Solicitação de visita via canal celular (4G/5G):} Ao se aproximar do imóvel, o corretor aciona o aplicativo móvel, que despacha uma requisição HTTPS ao PDP na nuvem informando seu identificador, o imóvel de interesse e os dados de contexto da visita.
+    \item \textbf{Avaliação de políticas e emissão do token assinado:} O PDP interroga a base relacional (PIP) para confrontar a situação do corretor e o agendamento ativo. Aprovadas as regras ABAC, o módulo criptográfico gera o payload com identificador exclusivo (\texttt{jti}) e assina digitalmente os dados com a chave privada mestre Ed25519, devolvendo a credencial ao aplicativo móvel, que a retém em cache seguro.
+    \item \textbf{Apresentação da credencial via QR Code offline:} O smartphone renderiza a credencial serializada na forma de código QR óptico na tela do aparelho. O corretor aproxima o display do leitor conectado ao ESP32. Esse canal óptico unidirecional não requer nenhum tipo de pareamento de rede local (como Wi-Fi ou Bluetooth).
+    \item \textbf{Validação criptográfica determinística offline:} O microcontrolador ESP32 processa os dados do payload e recalcula a assinatura digital contra a chave pública mestre gravada em seu firmware. Em seguida, verifica o código do dispositivo de destino (\texttt{dev}), confere a vigência temporal (\texttt{nbf} e \texttt{exp}) e consulta o buffer anti-replay mantido na partição NVS.
+    \item \textbf{Atuação física na fechadura e feedback sensorial:} Uma vez satisfeitas todas as condições criptográficas e temporais, o firmware envia um nível lógico alto ao pino GPIO 23, excitando a bobina do relé por 5 segundos para retrair o solenoide da trava. Simultaneamente, o LED verde pisca e o \textit{buzzer} emite um sinal sonoro simples de confirmação.
+    \item \textbf{Sincronização assíncrona de auditoria via MQTT:} Por se tratar de um imóvel desocupado sem infraestrutura de rede, o microcontrolador da fechadura não possui enlace de dados para dialogar diretamente com a nuvem. A sincronização da trilha de auditoria é transferida ao smartphone do corretor, que utiliza sua conexão celular 4G/5G para despachar um pacote de confirmação contendo o identificador \texttt{jti} ao broker MQTT corporativo (canal \texttt{imobiliaria/auditoria/acessos}) sob o protocolo QoS 1 (\textit{at least once}). O serviço em nuvem registra o timestamp e a efetivação da entrada na base imobiliária, garantindo a rastreabilidade integral da operação sem violar o isolamento do nó físico.
+\end{enumerate}
+
+% ============================================================
+\section{Modelo de Autorização Baseado em Atributos (ABAC)}
+\label{sec:modelo-abac}
+% ============================================================
+
+\subsection{Fundamentação: Do RBAC ao ABAC}
+\label{subsec:rbac-vs-abac}
+
+O modelo de Controle de Acesso Baseado em Papéis (\textit{Role-Based Access Control} -- RBAC) define privilégios a partir de funções estáticas de usuários. No cenário de intermediação imobiliária, o RBAC demonstra insuficiência: determinar apenas se um usuário possui o papel de ``corretor'' não impede que ele ingresse no imóvel fora do horário comercial, acesse unidades sob reforma ou entre em propriedades que não possui agendamento atribuído.
+
+O Controle de Acesso Baseado em Atributos (\textit{Attribute-Based Access Control} -- ABAC), adaptado da arquitetura HABAC$\alpha$ proposta por \citeonline{ameer2022}, resolve essa limitação avaliando regras compostas por múltiplos atributos dinâmicos em tempo de execução:
+
+\begin{equation}
+\label{eq:abac-decisao}
+\text{Decisão} = f(U_{\text{atrib}},\; D_{\text{atrib}},\; OP_{\text{atrib}},\; ES_{\text{atrib}})
+\end{equation}
+
+Em que $U_{\text{atrib}}$ representa os atributos do sujeito solicitante, $D_{\text{atrib}}$ os atributos do dispositivo/imóvel de destino, $OP_{\text{atrib}}$ os parâmetros da ação requerida e $ES_{\text{atrib}}$ as variáveis contextuais do ambiente no instante da avaliação.
+
+\subsection{Entidades e Dicionário de Atributos do Sistema}
+\label{subsec:dicionario-atributos}
+
+O modelo computacional implementado categoriza treze atributos fundamentais para a regulação do acesso às unidades, dispostos no Quadro~\ref{quadro:dicionario-atributos}.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Dicionário de atributos do modelo ABAC implementado.}
+\label{quadro:dicionario-atributos}
+\begin{tabularx}{\textwidth}{cc p{4.2cm} X}
+\toprule
+\textbf{Entidade} & \textbf{Símbolo} & \textbf{Atributo} & \textbf{Definição e Tipagem} \\
+\midrule
+\multirow{4}{*}{Sujeito ($U$)} 
+ & $U$ & \texttt{u.id} & String (UUID): Identificador único do corretor. \\
+ & $U$ & \texttt{u.role} & Enum: \texttt{CORRETOR\_PARCEIRO}, \texttt{GESTOR}. \\
+ & $U$ & \texttt{u.status} & Enum: \texttt{ATIVO}, \texttt{SUSPENSO}, \texttt{PENDENTE}. \\
+ & $U$ & \texttt{u.device\_fp} & String (Hash SHA-256): Identificador do aparelho móvel cadastrado. \\
+\addlinespace
+\multirow{3}{*}{Objeto ($D$)} 
+ & $D$ & \texttt{d.lock\_id} & String (Hex): Identificador físico gravado no ESP32 (MAC/UUID). \\
+ & $D$ & \texttt{d.status\_imovel} & Enum: \texttt{DISPONIVEL\_VENDA}, \texttt{LOCADO}, \texttt{MANUTENCAO}. \\
+ & $D$ & \texttt{d.lock\_state} & Enum: \texttt{TRAVADO}, \texttt{DESTRAVADO}, \texttt{BLOQUEIO}. \\
+\addlinespace
+\multirow{2}{*}{Ação ($OP$)} 
+ & $OP$ & \texttt{op.tipo} & Enum: \texttt{SOLICITAR\_TOKEN}, \texttt{DESTRAVAR\_PORTA}. \\
+ & $OP$ & \texttt{op.modo} & Enum: \texttt{OFFLINE\_BEARER}, \texttt{TELEMETRIA}. \\
+\addlinespace
+\multirow{4}{*}{Ambiente ($ES$)} 
+ & $ES$ & \texttt{es.timestamp} & Inteiro (Unix Epoch): Horário de recepção da solicitação. \\
+ & $ES$ & \texttt{es.horario\_comercial} & Booleano: \texttt{true} se horário atual estiver entre 08h e 19h. \\
+ & $ES$ & \texttt{es.dia\_permitido} & Booleano: Restrição a finais de semana ou feriados. \\
+ & $ES$ & \texttt{es.agendamento\_ativo} & Booleano: Confirmação de visita agendada na base imobiliária. \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelo autor (2026).}
+\end{table}
+
+\subsection{Arquitetura Funcional segundo o Padrão NIST SP 800-162}
+\label{subsec:arquitetura-nist}
+
+A segregação funcional dos módulos de controle de acesso adota as especificações do padrão NIST SP 800-162, dividindo os papéis de administração, armazenamento, decisão e aplicação, conforme detalhado na Figura~\ref{fig:modelo-abac-nist}.
+
+\begin{figure}[htbp]
+\centering
+\caption{Arquitetura funcional de controle de acesso ABAC baseada no padrão NIST SP 800-162.}
+\label{fig:modelo-abac-nist}
+\includegraphics[width=0.78\textwidth, keepaspectratio]{imagens/03_modelo_abac_nist.jpg}
+\fonte{Elaborado pelo autor (2026).}
+\end{figure}
+
+A cooperação entre os componentes ocorre da seguinte maneira:
+\begin{itemize}
+    \item \textbf{PAP} (\textit{Policy Administration Point}): Interface web administrativa em que gestores imobiliários definem e alteram políticas de acesso de corretores e horários de visitação dos imóveis.
+    \item \textbf{PIP} (\textit{Policy Information Point}): Banco de dados estruturado que fornece os valores reais dos atributos associados ao corretor, ao imóvel e ao agendamento.
+    \item \textbf{PDP} (\textit{Policy Decision Point}): Motor de avaliação lógico construído em FastAPI/Python. Processa a requisição, recupera atributos do PIP, avalia a política vigente e, caso aprovada, invoca o módulo criptográfico para emissão do token assinado.
+    \item \textbf{PEP Central} (\textit{Cloud PEP}): Ponto de aplicação de borda de nuvem no API Gateway, responsável por barrar chamadas malformadas ou de usuários não autenticados.
+    \item \textbf{PEP Borda} (\textit{Edge PEP}): Firmware embarcado no microcontrolador ESP32 na porta do imóvel. Recebe o token, verifica a assinatura digital contra a chave pública da autoridade e executa o chaveamento do relé.
+\end{itemize}
+
+\subsection{Formalização das Regras de Acesso e Algoritmo de Decisão}
+\label{subsec:regras-abac}
+
+As regras de acesso são definidas em esquemas JSON avaliados pelo PDP central. O Código~\ref{lst:politica-abac} ilustra a política principal que regula as solicitações de visita para imóveis ofertados.
+
+\begin{lstlisting}[language=Python, caption={Estrutura da política de autorização ABAC para visitas imobiliárias.}, label={lst:politica-abac}]
+{
+  "policy_id": "POL_VISITA_IMOVEL_DISPONIVEL",
+  "description": "Permite visita de corretores ativos a imoveis disponiveis em horario comercial",
+  "target": {
+    "action": "SOLICITAR_TOKEN",
+    "role": "CORRETOR_PARCEIRO"
+  },
+  "rules": [
+    {
+      "rule_id": "REGRA_01_STATUS_CORRETOR",
+      "condition": "u.status == 'ATIVO'",
+      "effect": "Permit"
+    },
+    {
+      "rule_id": "REGRA_02_STATUS_IMOVEL",
+      "condition": "d.status_imovel in ['DISPONIVEL_VENDA', 'DISPONIVEL_LOCACAO']",
+      "effect": "Permit"
+    },
+    {
+      "rule_id": "REGRA_03_JANELA_HORARIA",
+      "condition": "es.horario_comercial == true and es.dia_permitido == true",
+      "effect": "Permit"
+    },
+    {
+      "rule_id": "REGRA_04_VINCULO_AGENDAMENTO",
+      "condition": "es.agendamento_ativo == true",
+      "effect": "Permit"
+    }
+  ],
+  "rule_combining_algorithm": "deny_overrides"
+}
+\end{lstlisting}
+
+O algoritmo de combinação adotado é o \texttt{deny\_overrides}. Sob essa disciplina, caso qualquer condição estipulada em uma regra resulte em negação (\textit{Deny}), a requisição é indeferida pelo PDP, garantindo a aplicação do princípio do menor privilégio (\textit{least privilege}).
+
+% ============================================================
+\section{Modelo Criptográfico e Validação Offline}
+\label{sec:modelo-criptografico}
+% ============================================================
+
+\subsection{O Princípio da Validação Desconectada (Analogia EMV)}
+\label{subsec:analogia-emv}
+
+O nó IoT instalado na porta do imóvel não dispõe de conexão com a internet para consultar o banco de dados da imobiliária no momento em que o corretor se apresenta no local. A solução deste desafio fundamenta-se no princípio adotado pelo padrão bancário internacional EMV (\textit{Europay, Mastercard, Visa}) para transações em terminais de ponto de venda desconectados (\textit{offline transaction verification}).
+
+No padrão EMV offline, o terminal de pagamento desconhece previamente o saldo bancário da conta, mas possui internamente a chave pública da autoridade bancária emissora. Ao verificar a assinatura digital gravada no microprocessador do cartão com chip, o terminal obtém certeza matemática de que a credencial foi emitida por uma autoridade legítima e que os dados de transação permanecem inalterados.
+
+No artefato desenvolvido, o servidor de políticas atua como a autoridade emissora (Banco), detentora exclusiva da chave privada mestre. O smartphone do corretor funciona como portador do token assinado. O nó ESP32 atua de forma homóloga ao terminal bancário: através da chave pública previamente instalada em sua memória, o microcontrolador autentica o token apresentado localmente, sem comunicação de rede externa.
+
+\subsection{Seleção Criptográfica: Justificativa do Algoritmo Ed25519}
+\label{subsec:escolha-ed25519}
+
+Microcontroladores de baixo consumo energético e dimensões reduzidas operam com severas limitações de memória volátil e capacidade de cálculo aritmético. Mecanismos assimétricos tradicionais, como RSA com chaves de 2048 ou 4096 bits, exigem operações intensivas de exponenciação modular, demandando elevado tempo de resposta e consumo excessivo de memória RAM.
+
+A criptografia baseada em curvas elípticas contorna essa restrição. O algoritmo selecionado para o projeto é o Ed25519 (\textit{Edwards-curve Digital Signature Algorithm}), baseado na Curva de Edwards Torcida Curve25519. O Quadro~\ref{quadro:comparativo-cripto} compara as características técnicas de esquemas comuns frente às demandas do nó embarcado.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Comparativo entre esquemas criptográficos para validação em nós IoT embarcados.}
+\label{quadro:comparativo-cripto}
+\begin{tabularx}{\textwidth}{p{3.2cm} ccc X}
+\toprule
+\textbf{Critério} & \textbf{RSA-2048} & \textbf{HMAC-SHA256} & \textbf{Ed25519} & \textbf{Impacto no ESP32} \\
+\midrule
+Tipo de Chave & Assimétrica & Simétrica & Assimétrica & Protege contra cópia física da memória Flash. \\
+Tamanho da Chave & 256 bytes & 32 bytes (segredo) & 32 bytes & Reduzida ocupação em memória permanente. \\
+Tamanho da Assinatura & 256 bytes & 32 bytes & 64 bytes & Otimizado para pacotes seriais e códigos QR. \\
+Tempo de Verificação & 150 a 300 ms & $<$ 1 ms & 1,8 a 3,5 ms & Desempenho quase instantâneo de abertura. \\
+Nível de Segurança & 112 bits & 128 bits & 128 bits & Criptograficamente equivalente a RSA de 3072 bits. \\
+Ataques de Canal Lateral & Moderada & Boa & Excelente & Imunidade a variações de tempo computacional. \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelo autor com base em \citeonline{ameer2022} e dados experimentais (2026).}
+\end{table}
+
+A adoção do Ed25519 confere uma vantagem de segurança estrutural: como o microcontrolador armazena exclusivamente a chave pública do sistema (32 bytes), mesmo na hipótese de um invasor subtrair o equipamento físico da porta e extrair todo o conteúdo da memória flash, ele não obtém a chave privada. Torna-se matematicamente impossível para o atacante forjar credenciais para ingressar em outras fechaduras do condomínio ou da imobiliária.
+
+\subsection{Estrutura do Token de Acesso}
+\label{subsec:estrutura-token}
+
+O token emitido pelo PDP e entregue ao corretor é compactado em formato serializado JSON ou CBOR. O Código~\ref{lst:payload-token} expõe a estrutura formal dos campos transmitidos.
+
+\begin{lstlisting}[language=Python, caption={Estrutura formal do payload do token de acesso emitido pelo PDP.}, label={lst:payload-token}]
+{
+  "jti": "a7f4b892-91c2-4e88-9d21-f09b578c92a1",
+  "sub": "corretor_id_8472",
+  "dev": "lock_esp32_imovel_042",
+  "nbf": 1774204800,
+  "exp": 1774205700,
+  "act": "UNLOCK_DOOR",
+  "fp":  "e3b0c442...[hash SHA-256 do aparelho]...",
+  "sig": "3a8f9c10...[64 bytes assinatura Ed25519]..."
+}
+\end{lstlisting}
+
+O detalhamento funcional de cada parâmetro constituinte consta no Quadro~\ref{quadro:dicionario-token}.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Dicionário de campos constituintes do token de acesso.}
+\label{quadro:dicionario-token}
+\begin{tabularx}{\textwidth}{p{1.4cm} p{2.8cm} X}
+\toprule
+\textbf{Campo} & \textbf{Nome Técnico} & \textbf{Finalidade Funcional} \\
+\midrule
+\texttt{jti} & JWT ID / Nonce & Identificador universal único (UUIDv4) para prevenção de ataques de repetição (\textit{replay attack}). \\
+\texttt{sub} & \textit{Subject} & Identificador cadastral do corretor requerente habilitado. \\
+\texttt{dev} & \textit{Device Target} & Identificador exclusivo da fechadura destinatária. Evita o uso do token em portas incorretas. \\
+\texttt{nbf} & \textit{Not Before} & Timestamp Unix inicial que estabelece o início da validade da permissão concedida. \\
+\texttt{exp} & \textit{Expiration} & Timestamp Unix final que encerra a vigência da autorização (tempo de vida estrito de 15 minutos). \\
+\texttt{act} & \textit{Action} & Ação delegada ao dispositivo físico (\texttt{UNLOCK\_DOOR}). \\
+\texttt{fp} & \textit{Device Fingerprint} & Hash criptográfico vinculado ao smartphone do corretor \cite{satanasaowapak2021}, impedindo transferências. \\
+\texttt{sig} & \textit{Digital Signature} & Assinatura de 64 bytes gerada pelo PDP com a chave privada mestre Ed25519 sobre os demais campos. \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelo autor (2026).}
+\end{table}
+
+\subsection{Algoritmo de Verificação Local no ESP32}
+\label{subsec:algoritmo-verificacao-esp32}
+
+Ao receber o payload serial via interface de leitura física (óptica ou serial), o firmware do ESP32 submete a mensagem a uma bateria determinística de testes. O fluxograma da Figura~\ref{fig:fluxo-validacao-offline} sintetiza o encadeamento das decisões.
+
+\begin{figure}[htbp]
+\centering
+\caption{Fluxograma de validação determinística de tokens offline no microcontrolador ESP32.}
+\label{fig:fluxo-validacao-offline}
+\includegraphics[width=0.88\textwidth]{imagens/02_fluxo_validacao_offline.jpg}
+\fonte{Elaborado pelo autor (2026).}
+\end{figure}
+
+A validação cumpre cinco estágios sequenciais com término antecipado em caso de inconsistência:
+\begin{enumerate}
+    \item \textbf{Verificação de Destino (\texttt{dev}):} Compara o valor contido no campo \texttt{dev} com o identificador único armazenado no firmware do ESP32. Se divergente, rejeita o token por inadequação de unidade física.
+    \item \textbf{Verificação Criptográfica (\texttt{sig}):} Invoca a biblioteca nativa \texttt{mbedtls} para recalcular a verificação assimétrica da assinatura sobre os campos declarados a partir da chave pública armazenada. A alteração de um único bit invalida a verificação.
+    \item \textbf{Verificação Temporal (\texttt{nbf} e \texttt{exp}):} Compara a hora informada pelo relógio interno (ou sincronizada pelo token) com a janela de validade permitida. Acessos antes de \texttt{nbf} ou posteriores a \texttt{exp} são rejeitados.
+    \item \textbf{Verificação de Unicidade (\texttt{jti}):} Consulta a memória não-volátil (NVS) do microcontrolador para verificar se o identificador \texttt{jti} já consta na lista de tokens consumidos.
+    \item \textbf{Atuação Mecânica:} Atendidos todos os requisitos prévios, o firmware grava o \texttt{jti} no buffer histórico, aciona o relé solenoide pelo período regulamentar de 5 segundos, acende o LED verde de confirmação e emite um sinal sonoro simples no \textit{buzzer}.
+\end{enumerate}
+
+\subsection{Prevenção contra Ataques e Gestão do Buffer Anti-Replay}
+\label{subsec:anti-replay}
+
+Para garantir que a captura ou gravação do payload não permita aberturas subsequentes não autorizadas, o sistema adota medidas defensivas estruturais descritas no Quadro~\ref{quadro:vetores-ataque}.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Matriz de contramedidas de segurança implementadas contra vetores de ataque.}
+\label{quadro:vetores-ataque}
+\begin{tabularx}{\textwidth}{p{3cm} X p{5.2cm}}
+\toprule
+\textbf{Vetor de Ataque} & \textbf{Descrição do Ataque} & \textbf{Mecanismo de Defesa do Artefato} \\
+\midrule
+Replay Attack & Invasor intercepta o código QR exibido e tenta apresentá-lo novamente ao leitor. & O \texttt{jti} é gravado em buffer circular mantido na memória Flash NVS. Nova tentativa é rejeitada. \\
+Token Expirado & Uso de credencial legítima fora do horário acordado da visita. & Verificação do timestamp de expiração (\texttt{exp}) com descarte automático de tokens com TTL excedido. \\
+Adulteração de Payload & Tentativa de forjar horário de término ou trocar identificador de imóvel no arquivo JSON. & A assinatura Ed25519 é invalidada matematicamente; o microcontrolador recusa a leitura. \\
+Imóvel Incorreto & Tentativa de empregar autorização emitida para a Unidade A para abrir a Unidade B. & O identificador do dispositivo (\texttt{dev}) diverge da identidade estática da fechadura. \\
+Compartilhamento & Corretor envia captura de tela da autorização para terceiro não credenciado. & O hash \texttt{fp} vincula o token ao dispositivo móvel; o app não renderiza tokens em aparelhos não autorizados \cite{satanasaowapak2021}. \\
+Subtração do Nó IoT & Furto do hardware para extração física de memória e clonagem de chaves. & O microcontrolador guarda apenas a chave pública; chaves privadas permanecem isoladas no servidor em nuvem. \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelo autor (2026).}
+\end{table}
+
+A gestão do buffer anti-replay baseia-se em uma estrutura circular alocada na memória não volátil (NVS) do ESP32 com capacidade para reter até 200 identificadores \texttt{jti}. Considerando que o tempo de vida máximo de cada token restringe-se a 15 minutos (900 segundos), a retenção de 200 registros oferece proteção integral contra repetição sem acarretar sobrecarga de memória (ocupando menos de 8~KB na partição de dados).
+
+% ============================================================
+\section{Fluxo de Operação de Ponta a Ponta}
+\label{sec:fluxo-ponta-a-ponta}
+% ============================================================
+
+A operação do ecossistema de controle de acesso divide-se em três etapas coordenadas: emissão online do token pela nuvem, validação local offline no imóvel e sincronização assíncrona de auditoria. A Figura~\ref{fig:diagrama-sequencia-visita} exibe o diagrama de sequência detalhado que rege a interação entre os componentes.
+
+\begin{figure}[htbp]
+\centering
+\caption{Diagrama de sequência ponta a ponta do processo de requisição, validação e auditoria de visitas.}
+\label{fig:diagrama-sequencia-visita}
+\includegraphics[width=0.95\textwidth]{imagens/04_diagrama_sequencia_visita.jpg}
+\fonte{Elaborado pelo autor (2026).}
+\end{figure}
+
+\subsection{Fase 1: Solicitação e Emissão do Token (Online)}
+\label{subsec:fluxo-fase-emissao}
+
+\begin{enumerate}
+    \item Ao aproximar-se do imóvel, o corretor aciona o botão de abertura no aplicativo instalado em seu smartphone com conectividade celular (4G/5G).
+    \item O aplicativo despacha uma requisição HTTP via TLS pelo endpoint \path{/api/v1/access/request-token} ao servidor central, enviando as credenciais do usuário, identificador do imóvel e a assinatura do dispositivo móvel.
+    \item O PDP recebe os dados e interroga o banco relacional (PIP) para obter a situação cadastral do corretor, restrições do condomínio e confirmação do agendamento.
+    \item O motor ABAC processa as condições declaradas na política ativa.
+    \item Havendo conformidade, o módulo criptográfico gera o payload com identificador \texttt{jti} novo, calcula a assinatura digital com a chave privada mestre Ed25519 e retorna o pacote codificado em JSON com código HTTP 200. Caso as regras sejam violadas, o servidor devolve código HTTP 403 contendo a justificativa da negação.
+    \item O aplicativo recepciona o token, armazena-o no cache local seguro e projeta na tela do aparelho um código QR dinâmico contendo o payload serializado.
+\end{enumerate}
+
+\subsection{Fase 2: Apresentação e Validação Local (Offline)}
+\label{subsec:fluxo-fase-validacao}
+
+\begin{enumerate}
+    \item O corretor posiciona a tela do celular diante da interface de leitura associada ao microcontrolador ESP32 na porta do imóvel.
+    \item O microcontrolador processa a leitura dos caracteres e reconstrói o payload em memória.
+    \item O firmware executa a bateria de validação descrita na Seção~\ref{subsec:algoritmo-verificacao-esp32}: checagem do identificador do dispositivo (\texttt{dev}), verificação matemática da assinatura com a chave pública instalada, conferência da janela de validade (\texttt{nbf} e \texttt{exp}) e busca do \texttt{jti} no buffer anti-replay.
+    \item Sendo a credencial considerada íntegra e tempestiva, o pino GPIO 23 é configurado em nível lógico alto, excitando a bobina do relé que retrai o pino solenoide da fechadura por 5 segundos. Simultaneamente, o LED verde (GPIO 2) é aceso e o \textit{buzzer} (GPIO 18) emite um bipe curto.
+    \item O evento de abertura bem-sucedida é registrado na memória NVS local com o respectivo \texttt{jti} para preservar o histórico operacional caso a alimentação elétrica seja reiniciada.
+\end{enumerate}
+
+\subsection{Fase 3: Sincronização Assíncrona e Auditoria}
+\label{subsec:fluxo-fase-auditoria}
+
+\begin{enumerate}
+    \item Concluída a abertura física, o aplicativo do corretor gera um recibo criptográfico assinado contendo o \texttt{jti} empregado e o timestamp de efetivação.
+    \item O smartphone publica o recibo no broker MQTT centralizado (Eclipse Mosquitto) no canal \texttt{imobiliaria/auditoria/acessos}, utilizando conexão celular móvel e nível de serviço QoS 1 (\textit{at least once}).
+    \item O serviço de auditoria em nuvem coleta a mensagem e persiste a trilha de evento na base corporativa, associando a abertura à conta do corretor para eventual auditoria forense.
+\end{enumerate}
+
+% ============================================================
+\section{Stack Tecnológica e Especificação do Firmware}
+\label{sec:stack-tecnologica}
+% ============================================================
+
+\subsection{Mapeamento dos Componentes Tecnológicos}
+\label{subsec:mapeamento-stack}
+
+A seleção de tecnologias orientou-se por critérios de reprodutibilidade científica, desempenho de processamento e padronização com a literatura de IoT. O Quadro~\ref{quadro:stack-tecnologica} resume os elementos componentes da solução.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Mapeamento da pilha tecnológica empregada no desenvolvimento do artefato.}
+\label{quadro:stack-tecnologica}
+\begin{tabularx}{\textwidth}{p{2.8cm} p{4.2cm} X}
+\toprule
+\textbf{Camada / Módulo} & \textbf{Tecnologia Selecionada} & \textbf{Justificativa Técnica e Acadêmica} \\
+\midrule
+Nó da Fechadura (PEP) & ESP32 DevKit v1 (Xtensa LX6 Dual-Core 240 MHz) & Arquitetura consolidada na literatura de automação e segurança IoT residencial \cite{vardakis2024}. \\
+Linguagem do Firmware & C/C++ sobre PlatformIO / Framework Arduino & Controle determinístico de memória e integração à biblioteca criptográfica embarcada \texttt{mbedtls}. \\
+Servidor de Políticas (PDP) & Python 3.11+ com FastAPI & Arquitetura assíncrona ASGI de alto rendimento, tipagem com Pydantic e geração automática de especificações OpenAPI. \\
+Biblioteca Criptográfica & PyNaCl (Servidor) e mbedtls (ESP32) & Implementações padronizadas do algoritmo Ed25519 imunes a vulnerabilidades de implementação manual. \\
+Broker de Mensageria & Eclipse Mosquitto v2.0+ & Padrão aberto com suporte nativo a MQTT v3.1.1/v5.0, baixo consumo de memória ($<$ 10~MB) e garantia QoS 1. \\
+Ambiente de Simulação & Wokwi IoT Simulator & Plataforma com emulação de registradores do ESP32, suporte a rede virtual e conexão com periféricos externos. \\
+Interface do Corretor & Progressive Web App (PWA) em HTML5/JS & Permite acesso multiplataforma via navegador móvel sem fricção de distribuição em lojas de aplicativos. \\
+Ferramentas de Carga & Locust e Pytest & Automação de testes de estresse, injeção de requisições concorrentes e mensuração de percentis de latência. \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelo autor (2026).}
+\end{table}
+
+\subsection{Organização Modular do Firmware no ESP32}
+\label{subsec:modulos-firmware}
+
+O software executado no nó eletrônico foi estruturado em três módulos independentes:
+
+\begin{description}
+    \item[\texttt{crypto\_verifier.cpp}:] Responsável pelo subsistema criptográfico. Contém a chave pública mestre de 32 bytes (\texttt{SERVER\_PUBLIC\_KEY}) gravada em memória de programa (\texttt{PROGMEM}). Inicializa as estruturas da biblioteca \texttt{mbedtls} e expõe o método de validação \texttt{verify\_ed25519\_signature(payload, signature, pubkey)}.
+    \item[\texttt{token\_validator.cpp}:] Gerencia a interpretação semântica dos dados. Utiliza a biblioteca \texttt{ArduinoJson} com alocação estática de memória (\texttt{StaticJsonDocument}) para evitar fragmentação de heap. Realiza o confronto do campo \texttt{dev}, checagem de vigência temporal e iteração sobre a lista encadeada anti-replay mantida na partição NVS.
+    \item[\texttt{lock\_actuator.cpp}:] Isola a interface com os atuadores e sinalizadores físicos. Controla os estados dos pinos digitais GPIO, definindo tempos de retenção do relé por temporizadores não bloqueantes baseados na função \texttt{millis()}, evitando travamento de processamento.
+\end{description}
+
+\subsection{Endpoints e Motor de Inferência em FastAPI}
+\label{subsec:endpoints-api}
+
+O backend construído sobre FastAPI disponibiliza três pontos de entrada principais:
+
+\begin{itemize}
+    \item \texttt{POST /api/v1/access/request-token}: Endpoint principal de requisição. Recebe as credenciais do corretor, ID do imóvel e dados contextuais. Aciona a função de inferência ABAC, consulta a base PostgreSQL/SQLite e, em caso de decisão afirmativa, emprega o método \texttt{crypto\_sign\_detached} da biblioteca \texttt{PyNaCl} para produzir a assinatura do token.
+    \item \texttt{PATCH /api/v1/corretores/\{id\}/status}: Ponto de gestão cadastral utilizado por administradores. Permite alterar o status de um corretor de \texttt{ATIVO} para \texttt{SUSPENSO}. Modificações refletem-se instantaneamente no banco relacional, bloqueando emissões subsequentes de tokens.
+    \item \texttt{GET /api/v1/imoveis/\{id\}/logs}: Consulta a série histórica de acessos registrados para uma determinada unidade imobiliária, viabilizando relatórios gerenciais de auditoria.
+\end{itemize}
+
+\subsection{Estrutura de Mensageria e Tópicos MQTT}
+\label{subsec:topicos-mqtt}
+
+Para garantir a rastreabilidade exigida pelos requisitos do artefato, as mensagens de eventos transitam pelo broker Eclipse Mosquitto estruturadas sob uma árvore hierárquica padronizada de tópicos:
+
+\begin{lstlisting}[language=bash, caption={Estrutura hierárquica de tópicos MQTT empregada no sistema.}, label={lst:topicos-mqtt}]
+imobiliaria/
++-- imoveis/{imovel_id}/
+|   +-- status          # Telemetria: Online/Offline/Bateria
+|   +-- revogacoes      # Broadcast de revogacao emergencial
+|   +-- telemetria      # Tempo de resposta e diagnosticos
++-- auditoria/
+|   +-- acessos         # Recibos de acessos executados
+|   +-- alertas         # Tentativas com token invalido
++-- comandos/{imovel_id}/
+    +-- emergencia      # Bloqueio forcado administrativo
+\end{lstlisting}
+
+O pacote de dados remetido ao canal \texttt{imobiliaria/auditoria/acessos} adota o formato exposto no Código~\ref{lst:pacote-auditoria}, garantindo integridade e dados para a posterior composição dos relatórios de avaliação.
+
+\begin{lstlisting}[language=Python, caption={Formato do pacote de auditoria despachado via MQTT QoS 1.}, label={lst:pacote-auditoria}]
+{
+  "event_id": "evt_998124_ack",
+  "timestamp": 1774204850,
+  "imovel_id": "lock_esp32_imovel_042",
+  "corretor_id": "corretor_id_8472",
+  "jti_utilizado": "a7f4b892-91c2-4e88-9d21-f09b578c92a1",
+  "resultado": "ACESSO_CONCEDIDO",
+  "latencia_validacao_ms": 2.45,
+  "latencia_comunicacao_ms": 178.30
+}
+\end{lstlisting}
+
+% ============================================================
+\section{Ambiente de Simulação Virtual no Wokwi}
+\label{sec:ambiente-simulacao}
+% ============================================================
+
+\subsection{Justificativa Metodológica da Prototipagem Virtual}
+\label{subsec:justificativa-wokwi}
+
+A avaliação de sistemas de controle de acesso baseados em microcontroladores através de simulação virtual constitui procedimento respaldado na literatura científica recente \cite{simperf2024}. A simulação em plataforma controlada oferece vantagens experimentais frente à montagem física manual:
+
+\begin{enumerate}
+    \item \textbf{Reprodutibilidade científica:} Ensaios de latência, verificação de limites de memória e estresse com tokens adulterados podem ser reproduzidos de maneira idêntica por outros pesquisadores sem variações térmicas ou ruídos mecânicos de protoboards.
+    \item \textbf{Isolamento de variáveis espúrias:} Permite avaliar o tempo de computação algorítmica do microcontrolador sem interferências de oscilações elétricas na trava solenoide ou degradação de sinal óptico.
+    \item \textbf{Viabilidade experimental em bancada acadêmica:} Elimina a necessidade de aquisição de travas industriais de alto custo durante as rodadas de testes sistemáticos da monografia.
+\end{enumerate}
+
+\subsection{Mapeamento do Circuito Eletrônico e Pinout}
+\label{subsec:circuito-wokwi}
+
+O nó virtual foi modelado no Wokwi Simulator utilizando o módulo virtual ESP32 DevKit v1. As ligações elétricas aos periféricos virtuais utilizam o mapa de pinos indicado no Quadro~\ref{quadro:pinout-esp32}.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Mapeamento dos pinos GPIO e periféricos no circuito virtual ESP32.}
+\label{quadro:pinout-esp32}
+\begin{tabularx}{\textwidth}{c c p{3.8cm} X}
+\toprule
+\textbf{Pino GPIO} & \textbf{Direção} & \textbf{Dispositivo Conectado} & \textbf{Comportamento e Função} \\
+\midrule
+GPIO 23 & Saída (Digital) & Módulo Relé Solenoide & Nível ALTO comuta o relé por 5 segundos para liberar a trava. \\
+GPIO 2 & Saída (Digital) & LED Verde & Pulso luminoso que indica validação e liberação do acesso. \\
+GPIO 4 & Saída (Digital) & LED Vermelho & Sinaliza rejeição (token inválido, expirado ou unidade divergente). \\
+GPIO 18 & Saída (PWM) & Buzzer Piezoelétrico & Emite um tom agudo para sucesso e dois graves para rejeição. \\
+GPIO 16 / 17 & Entrada/Saída & Porta Serial / Leitor RX/TX & Recepção dos dados brutos correspondentes à leitura do código. \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelo autor (2026).}
+\end{table}
+
+A topologia das conexões entre pinos, componentes e referências de aterramento (GND) é parametrizada no arquivo descritivo \texttt{diagram.json}, reproduzido integralmente no Código~\ref{lst:diagram-wokwi}.
+
+\begin{lstlisting}[language=Python, caption={Arquivo descritivo diagram.json do circuito virtual no simulador Wokwi.}, label={lst:diagram-wokwi}]
+{
+  "version": 1,
+  "author": "Controle de Acesso IoT - TCC",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-relay-module", "id": "relay", "top": 100, "left": 150, "attrs": {} },
+    { "type": "wokwi-led", "id": "led_green", "top": -50, "left": 120, "attrs": { "color": "green" } },
+    { "type": "wokwi-led", "id": "led_red", "top": -50, "left": 160, "attrs": { "color": "red" } },
+    { "type": "wokwi-buzzer", "id": "buzzer", "top": -50, "left": 200, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "relay:IN", "green", [ "h20", "v40" ] ],
+    [ "esp:D2", "led_green:A", "green", [ "h10", "v-30" ] ],
+    [ "esp:D4", "led_red:A", "red", [ "h10", "v-30" ] ],
+    [ "esp:D18", "buzzer:2", "blue", [ "h10", "v-30" ] ],
+    [ "esp:GND.1", "relay:GND", "black", [ "h0" ] ],
+    [ "esp:GND.1", "led_green:C", "black", [ "h0" ] ],
+    [ "esp:GND.1", "led_red:C", "black", [ "h0" ] ],
+    [ "esp:GND.1", "buzzer:1", "black", [ "h0" ] ]
+  ]
+}
+\end{lstlisting}
+
+% ============================================================
+\section{Cenários de Demonstração DSR}
+\label{sec:cenarios-teste}
+% ============================================================
+
+Em alinhamento aos critérios de aceitação do Objetivo Específico 2 (OE2) definidos na introdução do trabalho, o artefato é demonstrado e validado em três cenários operacionais representativos.
+
+\subsection{Cenário 1: Concessão de Acesso Válido em Horário Permitido}
+\label{subsec:cenario-1}
+
+Este cenário avalia o comportamento do ecossistema sob fluxo nominal de operação sem incidentes.
+
+\begin{itemize}
+    \item \textbf{Pré-condições:} Corretor com cadastro ativo; imóvel catalogado como disponível para visitação; requisição submetida dentro do horário comercial e com agendamento homologado.
+    \item \textbf{Procedimento de Ensaio:} O corretor despacha a solicitação pelo app, recebe o token assinado e apresenta o código QR ao microcontrolador.
+    \item \textbf{Critério de Sucesso:} O microcontrolador conclui a validação da assinatura Ed25519 em tempo inferior a 10~ms, aciona o relé por 5 segundos com sinalização verde e publica o recibo de auditoria no broker MQTT sem perdas de pacotes.
+\end{itemize}
+
+\subsection{Cenário 2: Negação de Acesso sob Condições Inválidas e Tentativas de Ataque}
+\label{subsec:cenario-2}
+
+Avalia a robustez do firmware na rejeição sumária de tentativas irregulares ou maliciosas de acesso. A matriz de ensaios negativos divide-se em quatro casos de teste (CT), expressos no Quadro~\ref{quadro:cenario-2-testes}.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Matriz de ensaios do Cenário 2 (Rejeição de acessos inválidos e ataques).}
+\label{quadro:cenario-2-testes}
+\begin{tabularx}{\textwidth}{c p{2.8cm} X p{4.2cm}}
+\toprule
+\textbf{ID} & \textbf{Tipo de Teste} & \textbf{Estímulo Injetado no Sistema} & \textbf{Resultado Esperado} \\
+\midrule
+CT-2.1 & Token Expirado & Apresentação de credencial íntegra, porém com horário posterior a \texttt{exp} ($>$ 15 minutos). & Rejeição no microcontrolador, ativação do LED vermelho e gravação de log de expiração. \\
+CT-2.2 & Imóvel Divergente & Apresentação de token autêntico do Imóvel A na fechadura do Imóvel B. & Detecção de disparidade no campo \texttt{dev}; bloqueio imediato do relé. \\
+CT-2.3 & Assinatura Forjada & Alteração induzida de 1 bit no conteúdo do payload JSON antes do envio. & A função \texttt{verify\_ed25519} retorna falso; abertura categoricamente negada. \\
+CT-2.4 & Ataque de Repetição & Reenvio consecutivo do mesmo token válido que já acionou o sistema anteriormente. & Detecção do identificador \texttt{jti} no buffer NVS; bloqueio por duplicidade. \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelo autor (2026).}
+\end{table}
+
+\noindent\textbf{Critério de Aceitação:} Obter índice de eficácia de 100\% de bloqueio em todas as tentativas anômalas, com ausência de qualquer falso positivo de liberação do relé.
+
+\subsection{Cenário 3: Revogação Emergencial de Credenciais}
+\label{subsec:cenario-3}
+
+Investiga a capacidade do sistema em cessar privilégios concedidos a corretores suspensos administrativamente.
+
+\begin{itemize}
+    \item \textbf{Procedimento de Ensaio:} Um gestor altera a situação cadastral de um corretor ativo para \texttt{SUSPENSO} via painel administrativo. Imediatamente após a alteração, o corretor tenta emitir um token de visita para um imóvel disponível.
+    \item \textbf{Critério de Sucesso:} O PDP barra a requisição de emissão devolvendo código HTTP 403. Para tokens já emitidos em trânsito, a duração estrita do TTL (15 minutos) e o despacho de broadcast via tópico MQTT de revogação asseguram a invalidação temporal confinada da credencial.
+\end{itemize}
+
+% ============================================================
+\section{Métricas e Procedimentos de Avaliação}
+\label{sec:metricas-avaliacao}
+% ============================================================
+
+\subsection{Métricas Quantitativas de Desempenho e Segurança}
+\label{subsec:variaveis-metricas}
+
+Para a composição dos resultados experimentais (Capítulo~\ref{cap:resultados}), foram definidas oito variáveis quantitativas fundamentadas em parâmetros comumente adotados na literatura de sistemas de controle de acesso IoT \cite{ameer2022,vardakis2024,simperf2024}. O Quadro~\ref{quadro:metricas-avaliacao} consolida as variáveis, métodos de medição e metas.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Métricas quantitativas para avaliação experimental do artefato.}
+\label{quadro:metricas-avaliacao}
+\begin{tabularx}{\textwidth}{c p{4.2cm} c X p{2.2cm}}
+\toprule
+\textbf{\#} & \textbf{Variável / Métrica} & \textbf{Unidade} & \textbf{Método de Coleta e Instrumentação} & \textbf{Meta} \\
+\midrule
+M1 & Latência de Decisão ABAC (PDP) & ms & Timestamp de início e término da inferência lógica no FastAPI. & $<$ 50 ms \\
+M2 & Tempo de Assinatura Criptográfica & ms & Medição com biblioteca \texttt{time} sobre \texttt{crypto\_sign\_detached}. & $<$ 5 ms \\
+M3 & Tempo de Verificação no ESP32 & ms & Leitura com função \texttt{micros()} no firmware antes e após verificação Ed25519. & $<$ 10 ms \\
+M4 & Latência Total de Resposta (\textit{End-to-End}) & ms & Intervalo decorrido entre o clique no app móvel e o acendimento do LED verde. & $<$ 500 ms \\
+M5 & Consumo de Memória RAM (Heap) & KB & Monitoramento dinâmico no firmware via chamada \texttt{ESP.getFreeHeap()}. & $<$ 120 KB usados \\
+M6 & Ocupação de Memória Flash (ROM) & \% & Relatório de vinculação estática do compilador PlatformIO. & $<$ 35\% da flash \\
+M7 & Vazão de Mensagens no Broker MQTT & msg/s & Teste de estresse com Locust publicando eventos de auditoria concorrentes. & $>$ 100 msg/s \\
+M8 & Taxa de Bloqueio em Tentativas Anômalas & \% & Proporção de bloqueios efetivos nos casos de teste CT-2.1 a CT-2.4. & 100\% \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelo autor (2026).}
+\end{table}
+
+\subsection{Procedimento Experimental e Tratamento Estatístico}
+\label{subsec:procedimento-experimental}
+
+A coleta experimental estrutura-se sobre uma bateria de 50 repetições para cada teste individual de latência, minimizando a influência de anomalias operacionais e garantindo significância estatística. 
+
+Os dados brutos coletados são tabulados e processados por scripts analíticos em Python (bibliotecas Pandas e SciPy), gerando os seguintes parâmetros descritivos:
+\begin{itemize}
+    \item Média aritmética ($\mu$) e desvio padrão amostral ($\sigma$);
+    \item Valores extremos (mínimo e máximo observados);
+    \item Distribuição percentil ($p50$, $p95$ e $p99$), evidenciando a cauda longa de tempo de resposta sob condições adversas de simulação;
+    \item Matriz de confusão para validação das taxas de falsos positivos (concessões indevidas) e falsos negativos (bloqueios indevidos).
+\end{itemize}
+
+Os resultados brutos e as discussões comparativas com os trabalhos relacionados do estado da arte são apresentados e examinados no Capítulo~\ref{cap:resultados}.

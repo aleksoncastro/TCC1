@@ -1,0 +1,101 @@
+\providecommand{\abntreprintinfo}[1]{%
+ \citeonline{#1}}
+\setlength{\labelsep}{0pt}\begin{thebibliography}{}
+\providecommand{\abntrefinfo}[3]{}
+\providecommand{\abntbstabout}[1]{}
+\abntbstabout{v-1.9.7 }
+
+\bibitem[Ameer et al. 2022]{ameer2022}
+\abntrefinfo{Ameer et al.}{AMEER et al.}{2022}
+{AMEER, S. et al. An attribute-based approach toward a secured smart-home {IoT}
+  access control and a comparison with a role-based approach.
+\emph{Information}, v.~13, n.~2, p.~60, 2022.}
+
+\bibitem[Authors 2022]{continuousauth2022}
+\abntrefinfo{Authors}{AUTHORS}{2022}
+{AUTHORS, V. Continuous authentication for {IoT} smart home environments.
+\emph{Network Security}, 2022.}
+
+\bibitem[Authors 2024]{shauto2024}
+\abntrefinfo{Authors}{AUTHORS}{2024}
+{\underline{\ \ \ \ \ \ \ \ }. Reconceptualizing smart home automation:
+  Enforcing secure and user-friendly communication for delegating general
+  access. In:  \emph{International Conference on Advances in Computing,
+  Communication and Control Methods (ICACCM)}. [S.l.: s.n.], 2024.}
+
+\bibitem[Authors 2025]{yolov5smartlock2025}
+\abntrefinfo{Authors}{AUTHORS}{2025}
+{\underline{\ \ \ \ \ \ \ \ }. {IoT}-based smart lock with real-time person
+  detection using {YOLOv5} and mobile app integration.
+\emph{RCSI}, 2025.}
+
+\bibitem[Han, Du e Lu 2020]{hanotmpp2l2020}
+\abntrefinfo{Han, Du e Lu}{HAN; DU; LU}{2020}
+{HAN, D. et al. Trustworthiness and a zero leakage {OTMP-P2L} scheme based on
+  {NP} problems for edge security access.
+\emph{Sensors}, v.~20, n.~8, p.~2231, 2020.}
+
+\bibitem[Han et al. 2018]{hanblockchainoffline2018}
+\abntrefinfo{Han et al.}{HAN et al.}{2018}
+{\underline{\ \ \ \ \ \ \ \ }. Offline authentication scheme based on
+  blockchain technology for smart lock. In:  \emph{Proceedings of the 2018 ACM
+  International Conference}. [S.l.: s.n.], 2018.}
+
+\bibitem[Hevner et al. 2004]{hevner2004}
+\abntrefinfo{Hevner et al.}{HEVNER et al.}{2004}
+{HEVNER, A.~R. et al. Design science in information systems research.
+\emph{MIS Quarterly}, v.~28, n.~1, p. 75--105, 2004.}
+
+\bibitem[Peffers et al. 2007]{peffers2007}
+\abntrefinfo{Peffers et al.}{PEFFERS et al.}{2007}
+{PEFFERS, K. et al. A design science research methodology for information
+  systems research.
+\emph{Journal of Management Information Systems}, v.~24, n.~3, p. 45--77,
+  2007.}
+
+\bibitem[Researchers 2021]{surveysmarthomeauth2021}
+\abntrefinfo{Researchers}{RESEARCHERS}{2021}
+{RESEARCHERS, I. A survey on smart home authentication: Toward secure,
+  multi-level and interaction-based identification.
+\emph{IEEE Xplore}, 2021.}
+
+\bibitem[Researchers 2022]{ssaac2022}
+\abntrefinfo{Researchers}{RESEARCHERS}{2022}
+{\underline{\ \ \ \ \ \ \ \ }. {5G-SSAAC}: Slice-specific authentication and
+  access control in {5G}.
+\emph{IEEE Xplore}, 2022.}
+
+\bibitem[Researchers 2024]{simperf2024}
+\abntrefinfo{Researchers}{RESEARCHERS}{2024}
+{RESEARCHERS, M. Performance evaluation of {IoT} microcontrollers for access
+  control systems via simulation.
+\emph{MDPI}, 2024.}
+
+\bibitem[Satanasaowapak, Manasathien e Treebupachatsakul
+  2021]{satanasaowapak2021}
+\abntrefinfo{Satanasaowapak, Manasathien e Treebupachatsakul}{SATANASAOWAPAK;
+  MANASATHIEN; TREEBUPACHATSAKUL}{2021}
+{SATANASAOWAPAK, C. et al. Residential access control system using {QR} code
+  and the {IoT}.
+\emph{International Journal of Electrical and Computer Engineering (IJECE)},
+  v.~11, n.~4, p. 3267--3274, 2021.}
+
+\bibitem[Silva, Samaniego e Deters 2023]{camargosilvablockchain2023}
+\abntrefinfo{Silva, Samaniego e Deters}{SILVA; SAMANIEGO; DETERS}{2023}
+{SILVA, V. C. et al. {IoT} and blockchain for smart locks.
+\emph{IEEE Xplore}, 2023.}
+
+\bibitem[Vardakis et al. 2024]{vardakis2024}
+\abntrefinfo{Vardakis et al.}{VARDAKIS et al.}{2024}
+{VARDAKIS, G. et al. Review of smart-home security using the internet of
+  things.
+\emph{Electronics}, v.~13, n.~16, p.~3343, 2024.}
+
+\bibitem[Zhou et al. 2022]{zhoumaag2022}
+\abntrefinfo{Zhou et al.}{ZHOU et al.}{2022}
+{ZHOU, Y. et al. Perils and mitigation of security risks of cooperation in
+  {Mobile-as-a-Gateway} {IoT}. In:  \emph{Proceedings of the 2022 {ACM}
+  {SIGSAC} Conference on Computer and Communications Security ({CCS} '22)}.
+  [S.l.: s.n.], 2022.}
+
+\end{thebibliography}

@@ -1,0 +1,70 @@
+% !TeX root = main.tex
+\chapter{Introdução}
+\label{cap:introducao}
+
+% ============================================================
+\section{Contextualização}
+\label{sec:contextualizacao}
+% ============================================================
+
+O mercado imobiliário apoia-se em redes colaborativas de intermediação, nas quais administradoras gerenciam carteiras extensas de propriedades distribuídas geograficamente. Para viabilizar a comercialização e a locação desse patrimônio, as empresas dependem da atuação de dezenas de corretores autônomos e parceiros externos. Essa atividade impõe uma dinâmica operacional ágil e imprevista: visitas a imóveis costumam ser solicitadas por clientes em janelas de tempo reduzidas, com frequência fora do horário comercial, como no início da noite, intervalos de almoço ou finais de semana. Paralelamente às visitas comerciais, o ecossistema demanda acesso frequente para vistorias técnicas, serviços de limpeza, reparos de manutenção e registros fotográficos para divulgação em plataformas digitais.
+
+Apesar da modernização dos sistemas de gestão e dos portais de anúncio, o controle de acesso físico às propriedades permanece dependente de métodos convencionais, centralizado no uso de chaves metálicas. Na prática, quando um corretor parceiro agenda um atendimento, precisa deslocar-se previamente até a sede da imobiliária para retirar o molho de chaves da unidade, assinar fichas de protocolo em papel, dirigir-se ao imóvel para a demonstração e, em seguida, retornar à sede para restituir o chaveiro. Esse procedimento gera atrito logístico constante: consome tempo excessivo em deslocamentos no trânsito, eleva despesas com combustível e frequentemente inviabiliza visitas quando a imobiliária encontra-se fechada, gerando perda de oportunidades comerciais.
+
+Para contornar essa lentidão operacional, o mercado recorre a soluções de contingência frágeis, como deixar cópias com porteiros de condomínios sob guarda de terceiros ou instalar cofres mecânicos com segredo numérico (\textit{lockboxes}) presos a portões externos. Chaves físicas podem ser duplicadas em chaveiros comuns em poucos minutos sem qualquer registro formal \cite{camargosilvablockchain2023}. Já os cofres mecânicos utilizam senhas estáticas de quatro dígitos compartilhadas informalmente por aplicativos de mensagens instantâneas entre dezenas de profissionais, combinações que raramente são alteradas e mantêm o acesso aberto a corretores desvinculados por meses \cite{satanasaowapak2021}. O principal agravante desse cenário reside na total ausência de auditoria: caso ocorram avarias, torneiras abertas ou furtos de fiação, a administração não dispõe de meios para apurar quem acessou a unidade, em qual data e quanto tempo permaneceu no local.
+
+A alternativa intuitiva seria a adoção de fechaduras inteligentes conectadas ao ecossistema de Internet das Coisas (\textit{Internet of Things} -- IoT). Entretanto, as opções comerciais vigentes foram projetadas para residências habitadas, operando sob a premissa de conexão ininterrupta a redes locais sem fio (Wi-Fi) vinculadas à nuvem \cite{vardakis2024}. Esse modelo colide com a realidade do setor: imóveis desocupados ofertados para venda ou locação encontram-se desprovidos de planos de banda larga fixa, visto que proprietários e administradores evitam assumir custos mensais de conexão durante o período de vacância. Sem infraestrutura de rede local no imóvel, os dispositivos convencionais tornam-se inoperantes ou recuam para o uso das mesmas chaves físicas, neutralizando os benefícios da automação.
+
+Diante do dilema entre a necessidade de delegação ágil e a inexistência de conectividade no local, este trabalho desenvolve uma resposta arquitetural ao problema. A abordagem transfere a camada de conectividade para o único elemento provido de internet no instante da visita: o smartphone do corretor, que dispõe de conexão móvel celular (4G/5G). A fechadura embarcada opera de forma estritamente offline, utilizando criptografia de curvas elípticas (Ed25519) e avaliação dinâmica de políticas por atributos (ABAC contextual). O corretor requisita a permissão à nuvem, recebe o token assinado e o apresenta localmente via leitura óptica de QR Code; o microcontrolador valida a credencial matematicamente e aciona o destravamento, permitindo a sincronização assíncrona dos registros de auditoria via protocolo MQTT. A pesquisa é conduzida sob a metodologia \textit{Design Science Research} (DSR), orientando a concepção teórica, a implementação em bancada simulada e a avaliação experimental do artefato.
+
+% ============================================================
+\section{Problema de Pesquisa}
+\label{sec:problema}
+% ============================================================
+
+O problema que orienta esta pesquisa desdobra-se em duas dimensões complementares: a operacional, decorrente da ausência de mecanismos centralizados e auditáveis para gerenciar o acesso temporário de parceiros; e a técnica, decorrente da exigência de conexão de rede nas soluções IoT convencionais, inoperantes em imóveis desocupados.
+
+Diante desse cenário, define-se a seguinte pergunta de pesquisa:
+
+\begin{quote}
+\textit{Como projetar e avaliar uma arquitetura de controle de acesso inteligente baseada em IoT capaz de gerenciar, de forma segura, rastreável e orientada a atributos (ABAC), o acesso temporário de múltiplos corretores parceiros a imóveis desocupados desprovidos de conexão à internet?}
+\end{quote}
+
+% ============================================================
+\section{Objetivo Geral}
+\label{sec:objetivo-geral}
+% ============================================================
+
+Projetar e avaliar, por meio da metodologia \textit{Design Science Research} (DSR), um artefato IoT de controle de acesso que permita a imobiliárias gerenciar com segurança e rastreabilidade o acesso de corretores parceiros a imóveis offline, utilizando tokens assinados com o algoritmo Ed25519, validados em ambiente simulado.
+
+% ============================================================
+\section{Objetivos Específicos}
+\label{sec:objetivos-especificos}
+% ============================================================
+
+\begin{enumerate}
+    \item \textbf{Mapear o estado da arte} em autenticação offline, mensageria leve com MQTT (\textit{Message Queuing Telemetry Transport}) e criptografia de curva elíptica (ECC -- \textit{Elliptic Curve Cryptography}), de modo a fundamentar as decisões arquiteturais da proposta.
+    \item \textbf{Modelar a arquitetura} do sistema em camadas, integrando controle de acesso baseado em atributos (ABAC contextual -- \textit{Attribute-Based Access Control}) a tokens Ed25519 verificáveis offline.
+    \item \textbf{Implementar o protótipo simulado} cobrindo os cenários de acesso concedido, negado por violação de atributo e revogado.
+    \item \textbf{Avaliar o protótipo} quanto à latência de verificação offline da assinatura Ed25519 no microcontrolador e à latência de comunicação MQTT na fase de emissão do token, além da eficácia na contenção de acessos indevidos.
+\end{enumerate}
+
+% ============================================================
+\section{Justificativa}
+\label{sec:justificativa}
+% ============================================================
+
+Os problemas mapeados na contextualização não são independentes: a falha operacional, o risco de segurança e a limitação tecnológica se reforçam mutuamente, e nenhuma solução disponível os endereça de forma integrada. É nessa interseção que o presente trabalho se posiciona, com justificativa distribuída em três planos:
+
+\textbf{Plano prático.} A substituição de chaves físicas e senhas estáticas de \textit{lockboxes} elimina riscos de cópia não autorizada \cite{satanasaowapak2021} e reduz a dependência de plataformas proprietárias sujeitas a vazamento de credenciais \cite{camargosilvablockchain2023}, assegurando à imobiliária controle e auditoria confiáveis.
+
+\textbf{Plano técnico.} Demonstra-se viável executar verificação criptográfica assimétrica por curvas elípticas (ECC) de maneira estritamente offline em microcontroladores de baixo custo, com tempo de resposta na ordem de milissegundos \cite{hanblockchainoffline2018,hanotmpp2l2020}.
+
+\textbf{Plano acadêmico.} O estudo preenche a lacuna de integrar autenticação offline, políticas baseadas em atributos (ABAC contextual) e sincronização assíncrona de auditoria sob uma arquitetura voltada ao setor imobiliário.
+
+% ============================================================
+\section{Estrutura do Trabalho}
+\label{sec:estrutura}
+% ============================================================
+
+O trabalho organiza-se em cinco capítulos: o Capítulo \ref{cap:fundamentacao} apresenta a fundamentação teórica e os trabalhos correlatos; o Capítulo \ref{cap:metodologia} descreve o método DSR adotado; o Capítulo \ref{cap:resultados} apresenta a arquitetura, o protótipo simulado e a avaliação experimental; e o Capítulo \ref{cap:conclusao} sintetiza as contribuições e propõe trabalhos futuros.

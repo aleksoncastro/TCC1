@@ -1,0 +1,202 @@
+% !TeX root = main.tex
+\chapter{Fundamentação Teórica}
+\label{cap:fundamentacao}
+
+Este capítulo apresenta a base teórica e tecnológica que sustenta a concepção e a modelagem do artefato proposto neste trabalho. A discussão está estruturada em quatro eixos temáticos: (i) Internet das Coisas (IoT), sua arquitetura em camadas e protocolos de mensageria leve; (ii) modelos de controle de acesso e autorização dinâmica em ambientes computacionais restritos, incluindo a criptografia assimétrica para validação offline em dispositivos de borda; (iii) fechaduras inteligentes, acompanhadas de análise comparativa do estado da arte, com ênfase em esquemas de autenticação sem conectividade de rede; e (iv) segurança, rastreabilidade e trilhas de auditoria em ecossistemas IoT.
+
+% ============================================================
+\section{Internet das Coisas (IoT): Conceitos e Arquitetura}
+\label{sec:iot}
+% ============================================================
+
+\subsection{Definição e Desafios em Dispositivos Conectados}
+\label{subsec:iot-definicao}
+
+A Internet das Coisas (\textit{Internet of Things} -- IoT) consiste na interconexão digital de objetos físicos à infraestrutura de rede, permitindo que sensores, atuadores e microcontroladores realizem a coleta, o processamento e a troca autônoma de dados sem intervenção humana contínua \cite{vardakis2024}.
+
+Entretanto, \citeonline{vardakis2024} e \citeonline{ssaac2022} ressaltam que o avanço da IoT expõe desafios críticos de segurança decorrentes da heterogeneidade e da severa restrição computacional dos nós de borda. Ao contrário de servidores de aplicação ou estações de trabalho, dispositivos embarcados em extremidades de rede operam com processadores de baixo custo, memória volátil reduzida e capacidade energética limitada. Tal restrição inviabiliza a execução local de pilhas criptográficas complexas ou algoritmos pesados de avaliação de políticas de segurança \cite{surveysmarthomeauth2021}. 
+
+Diante desse cenário, torna-se imperativo projetar arquiteturas computacionais que dissociem a tarefa de decisão de acesso da tarefa de atuação física. Essa diretriz fundamenta diretamente o desenvolvimento do presente trabalho, no qual o dispositivo de acionamento da trava no imóvel atua exclusivamente na execução de ordens validadas previamente por uma infraestrutura centralizada.
+
+\subsection{Arquitetura em Camadas e Gateways de Borda}
+\label{subsec:iot-arquitetura}
+
+A literatura científica adota predominantemente a representação de sistemas IoT organizada em quatro camadas hierárquicas, estruturando o fluxo de dados desde a captura física até a interação com o usuário final \cite{vardakis2024}:
+
+\begin{enumerate}
+    \item \textbf{Camada Física e de Percepção:} Abrange o hardware embarcado, atuadores mecânicos (fechaduras elétricas ou solenóides), sensores de presença e leitores de entrada de credenciais (interfaces de leitura de QR Code, biometria ou teclados).
+    \item \textbf{Camada de Rede:} Fornece a infraestrutura de transmissão de dados via enlaces locais (Wi-Fi, Bluetooth) ou remotos, conectando dispositivos locais aos servidores de controle por meio de protocolos de transporte e aplicação dedicados.
+    \item \textbf{Camada de Middleware e Processamento:} Responsável pelo processamento lógico, aplicação de políticas de autorização, gerenciamento de regras temporais e persistência de dados.
+    \item \textbf{Camada de Aplicação:} Engloba os painéis administrativos web e aplicativos móveis voltados aos administradores imobiliários e aos corretores autorizados.
+\end{enumerate}
+
+Para mitigar a vulnerabilidade decorrente da exposição direta de microcontroladores à internet pública, \citeonline{vardakis2024} e \citeonline{ameer2022} preconizam a inserção de um \textit{gateway} local ou de borda (\textit{edge gateway}). O gateway centraliza a comunicação local, atua como intermediário na validação criptográfica e isola os dispositivos físicos de varreduras externas de rede. 
+
+
+\subsection{Protocolo de Mensageria Leve: MQTT}
+\label{subsec:mqtt}
+
+O MQTT (\textit{Message Queuing Telemetry Transport}) é um protocolo de mensageria assíncrona baseado no padrão de publicação e subscrição (\textit{publish/subscribe}), concebido especificamente para redes com largura de banda limitada e dispositivos com recursos restritos \cite{ameer2022}. No modelo MQTT, clientes publicam mensagens associadas a tópicos específicos em um intermediário central (\textit{broker}), o qual roteia os dados unicamente para os clientes previamente inscritos nesses mesmos canais de interesse.
+
+Em sistemas de segurança física, o MQTT viabiliza o envio imediato e bidirecional de comandos e telemetrias com sobrecarga (\textit{overhead}) de cabeçalho substancialmente inferior àquela gerada pelo protocolo HTTP tradicional \cite{shauto2024}. \citeonline{ameer2022} demonstraram que a aplicação de MQTT combinada à criptografia de transporte via TLS (\textit{Transport Layer Security}) oferece canais resilientes e com tempos de propagação de mensagens da ordem de milissegundos, impedindo a interceptação passiva e a adulteração de comandos de acionamento. Ademais, \citeonline{simperf2024} validam experimentalmente que o MQTT associado a microcontroladores como o ESP32 mantém estabilidade de latência em cenários simulados de controle de tráfego.
+
+Essa eficiência operacional orienta a escolha do MQTT no artefato deste estudo, viabilizando o despacho em tempo real do evento de abertura para a fechadura imediatamente após a validação da permissão do corretor pelo servidor.
+
+% ============================================================
+\section{Controle de Acesso em Ambientes IoT}
+\label{sec:controle-acesso}
+% ============================================================
+
+\subsection{Controle de Acesso Baseado em Papéis (RBAC) e Suas Limitações}
+\label{subsec:rbac}
+
+O modelo de Controle de Acesso Baseado em Papéis (\textit{Role-Based Access Control} -- RBAC) fundamenta-se na concessão de privilégios a determinados papéis organizacionais (\textit{roles}), atribuindo posteriormente os usuários a essas categorias pré-definidas \cite{ameer2022}. Trata-se do padrão amplamente implementado em sistemas de informação corporativos tradicionais devido à simplicidade administrativa inicial que oferece.
+
+Contudo, investigações recentes apontam que o RBAC apresenta rigidez excessiva quando transposto para ambientes ubíquos e IoT dinâmicos \cite{ameer2022, surveysmarthomeauth2021}. Em um ecossistema imobiliário, por exemplo, a atribuição estática do papel ``Corretor'' revela-se insuficiente para a segurança da operação: conceder acesso ilimitado com base apenas na função profissional impediria restringir o acesso a um imóvel específico, a uma faixa de horário comercial determinada ou a uma data de agendamento confirmada. Para reproduzir tais restrições no RBAC, o administrador seria obrigado a multiplicar papéis de forma insustentável (\textit{role explosion}) \cite{ameer2022}.
+
+Portanto, evidencia-se a necessidade de adotar modelos mais expressivos, capazes de fundamentar decisões de autorização em dados contextuais em vez de relações binárias entre usuários e funções organizacionais.
+
+\subsection{Controle de Acesso Baseado em Atributos (ABAC) e o Modelo \texorpdfstring{HABAC$\alpha$}{HABAC-Alpha}}
+\label{subsec:abac}
+
+O Controle de Acesso Baseado em Atributos (\textit{Attribute-Based Access Control} -- ABAC) supera as limitações do RBAC ao computar permissões a partir da avaliação dinâmica de atributos pertencentes a quatro categorias: sujeito (identidade do usuário, certificação do corretor), recurso (identificador do imóvel, estado da fechadura), ação pretendida (destravar, auditar) e ambiente (data, hora, geolocalização ou duração da visita) \cite{ameer2022, continuousauth2022}.
+
+A flexibilidade do ABAC foi aprimorada por \citeonline{ameer2022} na formulação do modelo HABAC$\alpha$ (\textit{Home Attribute-Based Access Control}), voltado ao ecossistema de residências inteligentes. O HABAC$\alpha$ formaliza políticas de autorização sensíveis ao contexto que consideram a hierarquia espacial do imóvel e condicionantes temporais estritas. Sob o HABAC$\alpha$, a autorização deixa de ser uma permissão perpétua e torna-se um evento transitório, revogado no instante em que qualquer condição contextual (como o término do horário estipulado) for violada \cite{ameer2022}.
+
+Essa formulação conceitual é diretamente transposta para a arquitetura desta pesquisa: o corretor parceiro apenas obtém acesso ao imóvel se preencher concomitantemente o vínculo ativo com a imobiliária, o agendamento prévio cadastrado e a janela cronológica precisa da visita.
+
+\subsection{Autenticação Temporária por Tokens Efêmeros}
+\label{subsec:tokens}
+
+Para que as políticas avaliadas pelo motor ABAC sejam executadas com agilidade na ponta sem sobrecarregar a fechadura, adota-se o paradigma de autenticação temporária desacoplada mediante tokens efêmeros \cite{satanasaowapak2021}. Sob essa abordagem, a infraestrutura central de autorização gera um código criptográfico temporizado dotado de tempo de vida útil reduzido (\textit{Time-To-Live} -- TTL), entregue digitalmente ao dispositivo do solicitante.
+
+\citeonline{satanasaowapak2021} propuseram um sistema de fechadura inteligente baseado em tokens descartáveis e senhas temporárias (OTP), demonstrando que o uso de credenciais que expiram automaticamente anula o risco associado ao roubo, compartilhamento ou vazamento posterior de senhas estáticas. De modo complementar, \citeonline{ssaac2022} ressaltam que tokens efêmeros permitem delegar ao cliente a comprovação de sua legitimidade com baixíssima complexidade de checagem no dispositivo de atuação.
+
+Assim, a geração de tokens dinâmicos no artefato deste TCC garante que a chave digital permaneça válida estritamente pelo intervalo necessário para a vistoria do imóvel, impedindo reutilizações indevidas por corretores ou terceiros após o término do evento.
+
+\subsection{Criptografia Assimétrica e Verificação Offline em Dispositivos de Borda}
+\label{subsec:criptografia-assimetrica}
+
+A adoção de criptografia assimétrica baseada em curvas elípticas (ECC --- \textit{Elliptic Curve Cryptography}) representa uma solução computacionalmente viável para implementar autenticação robusta em microcontroladores restritos sem depender de conectividade de rede no momento do acesso \cite{hanblockchainoffline2018}. Ao contrário de protocolos simétricos que exigem o compartilhamento prévio de um segredo entre remetente e receptor, o modelo assimétrico separa claramente as responsabilidades: a chave privada, custodiada com exclusividade pelo servidor central, assina digitalmente o token de acesso durante a fase de agendamento online; a chave pública correspondente, gravada em memória não volátil do microcontrolador, executa apenas a verificação criptográfica dessa assinatura no momento do destravamento \cite{hanotmpp2l2020}.
+
+Essa dissociação atende diretamente ao cenário de imóveis desocupados sem infraestrutura de rede local: o dispositivo de borda não precisa consultar qualquer servidor para validar a autenticidade e a vigência da credencial. O processo de verificação de uma assinatura ECC é uma operação matemática de custo computacional reduzido e tempo constante, executável em centenas de milissegundos mesmo em processadores de baixo consumo energético. \citeonline{hanotmpp2l2020} validaram experimentalmente essa premissa ao construir um protótipo de fechadura inteligente offline com validação completa em apenas 339 milissegundos em um microcontrolador ARM Cortex-A7, demonstrando que a arquitetura de verificação local alia rigor de segurança à agilidade operacional para o usuário final.
+
+A curva Ed25519, variante de assinatura de alta performance derivada da Curve25519, destaca-se nesse contexto por oferecer chaves de apenas 32 bytes, assinaturas de 64 bytes e resistência comprovada a ataques de canal lateral, sendo implementada nativamente nas principais bibliotecas de criptografia embarcada \cite{hanblockchainoffline2018}. Esse conjunto de propriedades fundamenta a escolha do esquema de assinatura digital assimétrica como mecanismo central de autenticação offline no artefato proposto neste trabalho.
+
+% ============================================================
+\section{Fechaduras Inteligentes e Trabalhos Relacionados}
+\label{sec:fechaduras}
+% ============================================================
+
+\subsection{Limitações dos Mecanismos Tradicionais de Acesso Físico}
+\label{subsec:limitacoes-tradicionais}
+
+Os mecanismos tradicionais de controle de acesso a imóveis dependem prioritariamente de chaves metálicas mecânicas ou de cartões magnéticos e códigos numéricos estáticos \cite{satanasaowapak2021, camargosilvablockchain2023}. No contexto operacional de imobiliárias que gerenciam dezenas ou centenas de propriedades distribuídas geograficamente, esse paradigma acarreta severas deficiências práticas.
+
+Primeiramente, o manuseio de chaves físicas impõe sobrecarga logística, exigindo que corretores parceiros desloquem-se até a sede da empresa apenas para retirar e devolver os chaveiros, além de expor os proprietários ao risco de clonagem clandestina de lâminas metálicas sem qualquer vestígio \cite{satanasaowapak2021}. Em segundo lugar, senhas estáticas compartilhadas por mensagens informais tendem a ser repassadas entre corretores e prestadores de serviços, tornando impossível assegurar quem de fato acessou o recinto \cite{camargosilvablockchain2023}. Finalmente, tais métodos não produzem registros automatizados de entrada e saída, impedindo auditorias eficientes caso ocorram furtos ou danos aos imóveis.
+
+O Quadro~\ref{quadro:comparativo-metodos} sintetiza as principais características e fragilidades desses métodos frente aos requisitos demandados pelo cenário investigado e pelo artefato proposto.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Comparação entre métodos convencionais de controle de acesso e o artefato proposto.}
+\label{quadro:comparativo-metodos}
+\begin{tabularx}{\textwidth}{p{3.2cm}cccX}
+\toprule
+\textbf{Método} & \textbf{Rastreabilidade} & \textbf{Revogação} & \textbf{Modo Offline} & \textbf{Limitação Principal} \\
+\midrule
+Chave física metálica & Não & Não & Sim & Risco de cópia ou extravio não registrado \cite{camargosilvablockchain2023}. \\
+Cofre mecânico com segredo (\textit{lockbox}) & Não & Não & Sim & Senhas estáticas repassadas informalmente entre dezenas de corretores. \\
+Teclado numérico local (\textit{PIN pad}) & Não & Parcial & Sim & Vulnerável à observação de terceiros (\textit{shoulder surfing}) e ataques de força bruta \cite{shauto2024}. \\
+Fechadura inteligente comercial (Wi-Fi) & Sim & Sim & Não & Depende de conexão fixa local com servidores do fabricante \cite{vardakis2024}. \\
+\textbf{Artefato proposto (DSR)} & \textbf{Sim} & \textbf{Sim} & \textbf{Sim} & \textbf{Validação por chave pública e delegação por token com TTL.} \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelo autor (2026).}
+\end{table}
+
+\subsection{Sistemas de Fechaduras Baseados em IoT}
+\label{subsec:fechaduras-iot}
+
+A substituição de cilindros mecânicos por fechaduras inteligentes conectadas (\textit{smart locks}) transforma o ponto de acesso em um nó computacional autônomo. O acionamento da tranca passa a ser intermediado por sinais eletrônicos condicionados à verificação de credenciais digitais móveis, biometria facial ou leitura de códigos bidimensionais (QR Codes) \cite{satanasaowapak2021, yolov5smartlock2025}.
+
+Diversos projetos acadêmicos e comerciais vêm aplicando essa transição. \citeonline{yolov5smartlock2025} utilizam visão computacional embarcada para identificação facial em fechaduras inteligentes residenciais. Contudo, conforme apontado por \citeonline{shauto2024}, abordagens dependentes exclusivamente de hardware biométrico local aumentam exponencialmente o custo unitário por porta, além de criarem barreiras de privacidade e exigirem o cadastramento facial prévio de todos os corretores parceiros em cada dispositivo instalado. Por sua vez, fechaduras comerciais dependentes de nuvens proprietárias expõem o administrador ao confinamento tecnológico (\textit{vendor lock-in}) e a custos contínuos de assinatura \cite{camargosilvablockchain2023}.
+
+Nesse cenário, dois trabalhos acadêmicos se destacam pela abordagem pioneira de autenticação offline em fechaduras inteligentes. \citeonline{hanblockchainoffline2018} propuseram o BC-SNOA (\textit{Blockchain-based Succinct Non-interactive Offline Authentication}), um esquema que combina criptografia de curva elíptica (ECC --- Secp256k1), Prova de Trabalho (PoW) baseada em SHA-256 e provas de conhecimento zero (zk-SNARKs) para permitir que a fechadura valide o QR Code apresentado pelo usuário de forma completamente offline, sem consultar qualquer servidor ou nuvem no momento do destravamento. O token é gerado durante a fase de reserva online e encapsulado em um código QR entregue ao smartphone do usuário; na porta, a fechadura executa a verificação matemática local e aciona o mecanismo de abertura sem qualquer dependência de conectividade.
+
+\citeonline{hanotmpp2l2020} avançaram sobre essa proposta com o esquema OTMP-P2L (\textit{One-Time Association Multitask Proofs for Peer to Local Authentication}), estruturado em torno de provas de conhecimento zero encadeadas baseadas em problemas NP: prova de período temporal (ECC homomórfico), prova de token legítimo (HMAC e assinatura ECC), prova de trabalho (PoW SHA-256) e verificação de pertencimento ao grupo por meio do acumulador unidirecional de Nyberg. Em testes físicos com microcontrolador ARM Cortex-A7 e leitor de QR Code, os autores alcançaram tempo de validação completa de apenas 339 milissegundos e tamanho de token de 593 bytes --- resultados que demonstram a plena viabilidade da abordagem em hardware restrito de baixo custo.
+
+
+\subsection{Análise Comparativa do Estado da Arte}
+\label{subsec:trabalhos-relacionados}
+
+Para fundamentar as escolhas arquiteturais e demonstrar a lacuna tecnológica atendida por esta pesquisa, o Quadro \ref{quadro:trabalhos-relacionados} sintetiza a comparação crítica entre as principais soluções identificadas na literatura recente frente à proposta deste trabalho.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{0.95}
+\caption{Comparação entre soluções da literatura e a arquitetura proposta.}
+\label{quadro:trabalhos-relacionados}
+\begin{tabular}{p{3.2cm}p{2.3cm}p{2.5cm}p{2.4cm}p{3.8cm}}
+\toprule
+\textbf{Trabalho / Autor} & \textbf{Mecanismo} & \textbf{Protocolo} & \textbf{Controle / Aut.} & \textbf{Lacuna Identificada} \\
+\midrule
+\citeonline{satanasaowapak2021} & OTP / Token Web & HTTP / Web Server & Estático temporizado & Dependência de servidor web local; sem suporte ABAC contextual. \\
+\addlinespace
+\citeonline{ameer2022} (HABAC$\alpha$) & Atributos / App & MQTT / TLS & ABAC formal hierárquico & Focado em residências unifamiliares; não aborda terceirização ou múltiplos parceiros. \\
+\addlinespace
+\citeonline{vardakis2024} & Gateway Smart Home & Não especificado & Baseado em papéis & Abordagem genérica de segurança; ausência de protótipo de acesso físico. \\
+\addlinespace
+\citeonline{camargosilvablockchain2023} & Smart Contracts / IoT & Blockchain & Descentralizado / P2P & Alta sobrecarga computacional e latência de mineração; inviável em cenários de baixo custo. \\
+\addlinespace
+\citeonline{shauto2024} & Biometria / Senha & Wi-Fi / Cloud & Autenticação local & Custo elevado por nó; vulnerável ao compartilhamento presencial de senhas. \\
+\addlinespace
+\citeonline{yolov5smartlock2025} & Visão (YOLOv5) & Rede local & Reconhecimento Facial & Alto consumo de processamento; exige pré-cadastro de faces para cada corretor. \\
+\addlinespace
+\citeonline{hanblockchainoffline2018} (BC-SNOA) & ECC + PoW + zk-SNARK + QR Code & Nenhum (offline) & Criptográfico offline & Contexto de reserva de salas corporativas; sem ABAC imobiliário; sem ESP32. \\
+\addlinespace
+\citeonline{hanotmpp2l2020} (OTMP-P2L) & ECC + PoW + HMAC + Acumulador Nyberg & Nenhum (offline) & Provas NP encadeadas & Prova de conceito em ARM; sem rastreabilidade de auditoria; sem contexto imobiliário. \\
+\midrule
+\textbf{Artefato Proposto} & \textbf{Token Ed25519 / ABAC} & \textbf{QR Code Offline} & \textbf{ABAC Contextual Offline} & \textbf{Baixo custo, validação 100\% offline sem Wi-Fi no imóvel, múltiplos parceiros e trilha completa de auditoria.} \\
+\bottomrule
+\end{tabular}
+\fonte{Elaborado pelo autor (2026).}
+\end{table}
+
+A comparação evidenciada no Quadro \ref{quadro:trabalhos-relacionados} ratifica que, conquanto existam iniciativas sofisticadas baseadas em blockchain \cite{camargosilvablockchain2023} ou visão computacional \cite{yolov5smartlock2025}, persiste uma carência de arquiteturas enxutas que combinem baixo custo de implantação, autorização contextual dinâmica (ABAC) e auditoria transparente para ambientes corporativos com múltiplos atores externos.
+
+% ============================================================
+\section{Segurança, Rastreabilidade e Auditoria em Sistemas IoT}
+\label{sec:seguranca}
+% ============================================================
+
+\subsection{Vetores de Ataque e Vulnerabilidades Comuns}
+\label{subsec:ameacas}
+
+No modelo proposto, três vetores de ataque são especialmente críticos: a interceptação do token em trânsito, a reutilização de um QR Code já utilizado e o uso indevido do smartphone do corretor como ponto de decisão de segurança \cite{shauto2024, surveysmarthomeauth2021}. A espionagem passiva (\textit{eavesdropping}), os ataques de repetição (\textit{replay attacks}) e a interceptação ativa (\textit{man-in-the-middle}) são os mecanismos concretos associados a esses vetores \cite{shauto2024}. A ausência de criptografia de transporte no MQTT permitiria que um invasor capturasse o comando de abertura e o replicasse para destrancar o imóvel em momento posterior.
+
+Em cenários de validação offline, o risco de reutilização de tokens persiste mesmo sem acesso à rede: um atacante que capture o QR Code durante uma visita pode tentar apresentá-lo novamente após o encerramento da janela temporal autorizada. Para neutralizar essa ameaça, o artefato proposto associa a cada token um identificador único de uso único (\textit{nonce} --- campo \texttt{jti} do JWT), cujo registro é persistido em buffer circular na memória não volátil (NVS Flash) do microcontrolador, garantindo que nenhum token já processado seja aceito novamente, independentemente de sua validade criptográfica \cite{hanotmpp2l2020}.
+
+Adicionalmente, \citeonline{zhoumaag2022} mapearam sistematicamente as vulnerabilidades introduzidas pelo paradigma \textit{Mobile-as-a-Gateway} (MaaG), no qual o smartphone do usuário atua não como simples transportador, mas como árbitro ativo das políticas de acesso. Os autores identificaram quatro classes críticas de falha --- perda semântica na tradução de permissões, responsabilidades assimétricas entre nuvem e dispositivo, inconsistência causal na sincronização e injeção de chaves ocultas locais --- que permitem a usuários temporários manter acesso indefinido ao dispositivo físico mesmo após revogação no servidor. Esse diagnóstico fundamenta uma decisão arquitetural central no presente trabalho: o smartphone do corretor atua exclusivamente como transportador passivo do token assinado, sem poder de decisão ou armazenamento de regras de acesso; toda a lógica de validação reside no microcontrolador.
+
+No plano das credenciais, o emprego de senhas estáticas ou padrões PIN perpetua vulnerabilidades de força bruta e captura por engenharia social \cite{shauto2024}. Paralelamente, como advertem \citeonline{camargosilvablockchain2023}, a dependência irrestrita de serviços em nuvem proprietários de terceiros introduz o perigo de exfiltração não controlada de registros de acesso ou de indisponibilidade unilateral dos servidores remotos durante vistorias essenciais.
+
+\subsection{Mecanismos de Proteção e Trilhas de Auditoria}
+\label{subsec:mecanismos}
+
+Para mitigar integralmente as fragilidades delineadas, a arquitetura do artefato adota uma estratégia de defesa em profundidade estruturada em quatro pilares técnicos complementares:
+
+\begin{enumerate}
+    \item \textbf{Criptografia de Transporte (TLS):} Blindagem criptográfica fim a fim de todos os pacotes MQTT trafegados entre os clientes, o broker e o microcontrolador, inviabilizando técnicas de leitura e injeção maliciosa de pacotes \cite{ameer2022, shauto2024}.
+    \item \textbf{Descarte Temporal de Credenciais:} Configuração de expiração algorítmica estrita (TTL curto) associada a cada token gerado, eliminando os impactos de vazamento de credenciais pós-uso \cite{satanasaowapak2021}.
+    \item \textbf{Isolamento em Gateway Local:} Centralização da tomada de decisão no gateway de borda, preservando a fechadura contra conexões diretas oriundas da internet pública \cite{vardakis2024, ameer2022}.
+    \item \textbf{Trilha Auditável de Eventos (\textit{Audit Trail}):} Persistência sequencial imutável de todos os eventos de autorização, abrangendo concessões legítimas, recusas de tentativas fora do expediente e revogações forçadas de acesso \cite{shauto2024}.
+\end{enumerate}
+
+A consolidação de logs auditáveis atende com rigor à necessidade de transparência demandada pela governança imobiliária: a qualquer instante, a administração dispõe de comprovação cabal de qual corretor solicitou a entrada, o instante exato de liberação e o tempo decorrido até o trancamento, estabelecendo a responsabilização inequívoca pelo patrimônio administrado.
+
+\bigskip
+Dessa forma, o conjunto de conceitos, protocolos e modelos analíticos delineados neste capítulo fornece o embasamento teórico e a justificativa técnica necessários para a formalização metodológica e o desenvolvimento do protótipo simulado nos capítulos subsequentes.

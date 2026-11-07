@@ -1,0 +1,159 @@
+%%
+%% Customizações do abnTeX2 (http://abnTeX2.googlecode.com) para a Universidade XXXX
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%%
+%% This work has the LPPL maintenance status `maintained'.
+%% 
+%% The Current Maintainer of this work is SEU_NOME, SEU_EMAIL
+%%
+%% Further information about abnTeX2 are available on https://github.com/abntex/abntex2
+%%
+
+% ---
+% INICIO DAS CUSTOMIZACOES PARA A UNIVERSIDADE ESTADUAL DO TOCANTINS
+% ---
+\ProvidesPackage{unitins}[2026/25/03 Criacao desta customizacao do abnTeX2]
+
+% Alterando a capa
+\renewcommand{\imprimircapa}{%
+  \begin{capa}%
+    \center
+    \includegraphics[width=0.9\textwidth]{imagens/unitins.png}
+    \par
+    \vspace*{0.3cm}
+    {\ABNTEXchapterfont\large UNIVERSIDADE ESTADUAL DO TOCANTINS\\
+    CURSO DE SISTEMAS DE INFORMA{\c{C}}{\~{A}}O}
+    \par
+    \vspace*{2cm}
+    {\large \expandafter\MakeUppercase{\imprimirautor}}
+    \par
+    \vspace*{\fill}
+    {\ABNTEXchapterfont\bfseries\Large \expandafter\MakeUppercase{\imprimirtitulo}}
+    \vspace*{\fill}
+    \par
+    {\large\imprimirlocal}
+    \par
+    {\large\imprimirdata}
+    \vspace*{1cm}
+  \end{capa}
+}
+
+% Folha de rosto 
+\makeatletter
+\renewcommand{\folhaderostocontent}{
+  \begin{center}
+    \includegraphics[width=0.9\textwidth]{imagens/unitins.png}
+    \par
+    \vspace*{0.3cm}
+    {\ABNTEXchapterfont\large UNIVERSIDADE ESTADUAL DO TOCANTINS\\
+    CURSO DE SISTEMAS DE INFORMA{\c{C}}{\~{A}}O}
+    \par
+    \vspace*{1.5cm}
+    {\large \expandafter\MakeUppercase{\imprimirautor}}
+    \par
+    \vspace*{1.5cm}
+    {\ABNTEXchapterfont\bfseries\Large \expandafter\MakeUppercase{\imprimirtitulo}}
+    \par
+    \vspace*{1.5cm}
+    \hspace{.45\textwidth}
+    \begin{minipage}{.5\textwidth}
+      \small
+      \imprimirpreambulo
+      \par
+      \vspace*{0.5cm}
+      {\noindent\textbf{Orientadora:} \imprimirorientador}
+    \end{minipage}%
+    \vspace*{\fill}
+  \end{center}
+  \begin{center}
+    {\large\imprimirlocal}
+    \par
+    {\large\imprimirdata}
+    \vspace*{1cm}
+  \end{center}
+}
+\makeatother
+
+% Ficha Catalografica no verso da folha de rosto (12,5 cm x 7,5 cm)
+\newcommand{\imprimirfichacatalografica}{%
+  \begin{fichacatalografica}
+    \vspace*{\fill}
+    \begin{center}
+      \small Dados Internacionais de Catalogação na Publicação (CIP)\\
+      Sistema Integrado de Bibliotecas da Universidade Estadual do Tocantins (SIBU)
+    \end{center}
+    \vspace{0.2cm}
+    \begin{center}
+      \fbox{\begin{minipage}[c][7.5cm][c]{12.5cm}
+        \small
+        \vspace{0.2cm}
+        \noindent S729c \quad Souza, Alêkson Castro de.\\
+        \hspace*{1.2cm} Controle de acesso IoT na gestão imobiliária via DSR / Alêkson Castro de Souza. -- Palmas, TO, \imprimirdata.\\
+        \hspace*{1.2cm} \pageref{LastPage} f. : il.\\
+        \vspace{0.3cm}
+        \hspace*{1.2cm} Orientadora: Profa. Me. Tamirys Virgulino.\\
+        \hspace*{1.2cm} Trabalho de Conclusão de Curso (Graduação em Sistemas de Informação) -- Universidade Estadual do Tocantins, \imprimirdata.\\
+        \vspace{0.3cm}
+        \hspace*{1.2cm} 1. Internet das Coisas (IoT). 2. Controle de acesso. 3. Gestão imobiliária. 4. Criptografia Ed25519. 5. Design Science Research. I. Virgulino, Tamirys, orient. II. Universidade Estadual do Tocantins. III. Título.\\
+        \vspace{0.1cm}
+        \begin{flushright}
+          CDU 004.738.5:681.518\hspace*{0.5cm}
+        \end{flushright}
+      \end{minipage}}
+    \end{center}
+    \vspace*{1cm}
+  \end{fichacatalografica}
+}
+
+% Folha de Aprovacao
+\newcommand{\imprimirfolhadeaprovacao}{%
+  \begin{folhadeaprovacao}
+    \begin{center}
+      {\ABNTEXchapterfont\large\expandafter\MakeUppercase{\imprimirautor}}
+      \par
+      \vspace*{2cm}
+      {\ABNTEXchapterfont\bfseries\Large\expandafter\MakeUppercase{\imprimirtitulo}}
+      \par
+      \vspace*{1.5cm}
+      \hspace{.45\textwidth}
+      \begin{minipage}{.5\textwidth}
+        \small
+        \imprimirpreambulo
+      \end{minipage}%
+      \vspace*{\fill}
+    \end{center}
+    \noindent Aprovado em: \rule{1.5cm}{0.15mm} de \rule{3.5cm}{0.15mm} de \imprimirdata.
+    \par
+    \vspace*{1cm}
+    \begin{center}
+      \textbf{BANCA EXAMINADORA}
+      \par
+      \vspace*{1.5cm}
+      \rule{10cm}{0.15mm}\\
+      Profa. Me. Tamirys Virgulino (Orientadora)\\
+      Universidade Estadual do Tocantins -- UNITINS
+      \par
+      \vspace*{1.5cm}
+      \rule{10cm}{0.15mm}\\
+      Prof(a). Me./Dr(a). [Membro da Banca 1]\\
+      Universidade Estadual do Tocantins -- UNITINS
+      \par
+      \vspace*{1.5cm}
+      \rule{10cm}{0.15mm}\\
+      Prof(a). Me./Dr(a). [Membro da Banca 2]\\
+      Universidade Estadual do Tocantins -- UNITINS
+    \end{center}
+    \vspace*{\fill}
+  \end{folhadeaprovacao}
+}
+
+% ---
+% FIM DAS CUSTOMIZACOES PARA A UNIVERSIDADE ESTADUAL DO TOCANTINS
+% ---

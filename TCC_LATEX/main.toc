@@ -1,0 +1,83 @@
+\changetocdepth {4}
+\babel@toc {brazil}{}\relax 
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {1}\MakeTextUppercase []{Introdução}}{10}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Contextualização}{10}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Problema de Pesquisa}{11}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Objetivo Geral}{11}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Objetivos Específicos}{12}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Justificativa}{12}{section.1.5}%
+\contentsline {section}{\numberline {1.6}Estrutura do Trabalho}{12}{section.1.6}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {2}\MakeTextUppercase []{Fundamentação Teórica}}{13}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Internet das Coisas (IoT): Conceitos e Arquitetura}{13}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Definição e Desafios em Dispositivos Conectados}{13}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Arquitetura em Camadas e Gateways de Borda}{13}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Protocolo de Mensageria Leve: MQTT}{14}{subsection.2.1.3}%
+\contentsline {section}{\numberline {2.2}Controle de Acesso em Ambientes IoT}{15}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Controle de Acesso Baseado em Papéis (RBAC) e Suas Limitações}{15}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Controle de Acesso Baseado em Atributos (ABAC) e o Modelo HABAC$\alpha $}{15}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Autenticação Temporária por Tokens Efêmeros}{16}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}Criptografia Assimétrica e Verificação Offline em Dispositivos de Borda}{16}{subsection.2.2.4}%
+\contentsline {section}{\numberline {2.3}Fechaduras Inteligentes e Trabalhos Relacionados}{17}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Limitações dos Mecanismos Tradicionais de Acesso Físico}{17}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Sistemas de Fechaduras Baseados em IoT}{17}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Análise Comparativa do Estado da Arte}{19}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Segurança, Rastreabilidade e Auditoria em Sistemas IoT}{20}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Vetores de Ataque e Vulnerabilidades Comuns}{20}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Mecanismos de Proteção e Trilhas de Auditoria}{20}{subsection.2.4.2}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {3}\MakeTextUppercase []{Metodologia e Desenvolvimento do Artefato}}{22}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Caracterização Metodológica}{22}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Design Science Research como Paradigma de Pesquisa}{22}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Mapeamento das Fases do DSR no Trabalho}{23}{subsection.3.1.2}%
+\contentsline {section}{\numberline {3.2}Contexto e Formalização do Problema}{23}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}O Cenário de Gestão de Visitas em Imóveis Desocupados}{23}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Análise Crítica dos Métodos Convencionais no Contexto do Problema}{24}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Definição do Problema e Questão de Pesquisa}{24}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}Requisitos e Pilares de Concepção do Artefato}{24}{subsection.3.2.4}%
+\contentsline {section}{\numberline {3.3}Arquitetura Geral do Artefato}{25}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Visão em Camadas do Ecossistema IoT}{25}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Componentes Arquiteturais e Responsabilidades}{26}{subsection.3.3.2}%
+\contentsline {section}{\numberline {3.4}Modelo de Autorização Baseado em Atributos (ABAC)}{28}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Fundamentação: Do RBAC ao ABAC}{28}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Entidades e Dicionário de Atributos do Sistema}{28}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Arquitetura Funcional segundo o Padrão NIST SP 800-162}{28}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Formalização das Regras de Acesso e Algoritmo de Decisão}{30}{subsection.3.4.4}%
+\contentsline {section}{\numberline {3.5}Modelo Criptográfico e Validação Offline}{31}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}O Princípio da Validação Desconectada (Analogia EMV)}{31}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Seleção Criptográfica: Justificativa do Algoritmo Ed25519}{31}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.5.3}Estrutura do Token de Acesso}{31}{subsection.3.5.3}%
+\contentsline {subsection}{\numberline {3.5.4}Algoritmo de Verificação Local no ESP32}{33}{subsection.3.5.4}%
+\contentsline {subsection}{\numberline {3.5.5}Prevenção contra Ataques e Gestão do Buffer Anti-Replay}{34}{subsection.3.5.5}%
+\contentsline {section}{\numberline {3.6}Fluxo de Operação de Ponta a Ponta}{34}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Fase 1: Solicitação e Emissão do Token (Online)}{34}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}Fase 2: Apresentação e Validação Local (Offline)}{36}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}Fase 3: Sincronização Assíncrona e Auditoria}{36}{subsection.3.6.3}%
+\contentsline {section}{\numberline {3.7}Stack Tecnológica e Especificação do Firmware}{37}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Mapeamento dos Componentes Tecnológicos}{37}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Organização Modular do Firmware no ESP32}{37}{subsection.3.7.2}%
+\contentsline {subsection}{\numberline {3.7.3}Endpoints e Motor de Inferência em FastAPI}{38}{subsection.3.7.3}%
+\contentsline {subsection}{\numberline {3.7.4}Estrutura de Mensageria e Tópicos MQTT}{38}{subsection.3.7.4}%
+\contentsline {section}{\numberline {3.8}Ambiente de Simulação Virtual no Wokwi}{39}{section.3.8}%
+\contentsline {subsection}{\numberline {3.8.1}Justificativa Metodológica da Prototipagem Virtual}{39}{subsection.3.8.1}%
+\contentsline {subsection}{\numberline {3.8.2}Mapeamento do Circuito Eletrônico e Pinout}{39}{subsection.3.8.2}%
+\contentsline {section}{\numberline {3.9}Cenários de Demonstração DSR}{41}{section.3.9}%
+\contentsline {subsection}{\numberline {3.9.1}Cenário 1: Concessão de Acesso Válido em Horário Permitido}{41}{subsection.3.9.1}%
+\contentsline {subsection}{\numberline {3.9.2}Cenário 2: Negação de Acesso sob Condições Inválidas e Tentativas de Ataque}{41}{subsection.3.9.2}%
+\contentsline {subsection}{\numberline {3.9.3}Cenário 3: Revogação Emergencial de Credenciais}{42}{subsection.3.9.3}%
+\contentsline {section}{\numberline {3.10}Métricas e Procedimentos de Avaliação}{42}{section.3.10}%
+\contentsline {subsection}{\numberline {3.10.1}Métricas Quantitativas de Desempenho e Segurança}{42}{subsection.3.10.1}%
+\contentsline {subsection}{\numberline {3.10.2}Procedimento Experimental e Tratamento Estatístico}{42}{subsection.3.10.2}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {4}\MakeTextUppercase []{Resultados e Discussão}}{44}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Introdução}{44}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Apresentação de resultados}{44}{section.4.2}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {5}\MakeTextUppercase []{Conclusão}}{45}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Trabalhos futuros}{45}{section.5.1}%
+\vspace {\cftbeforechapterskip }
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\contentsline {chapter}{\MakeTextUppercase []{Refer\^encias}}{46}{section*.27}%

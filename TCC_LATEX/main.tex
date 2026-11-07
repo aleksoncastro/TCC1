@@ -1,0 +1,159 @@
+\documentclass[
+	% -- opções da classe memoir --
+	12pt,				% tamanho da fonte
+	openright,			% capítulos começam em pág ímpar (insere página vazia caso preciso)
+	oneside,			% para impressão em verso e anverso. Oposto a oneside
+	a4paper,			% tamanho do papel. 
+	% -- opções da classe abntex2 --
+	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	english,			% idioma adicional para hifenização
+	brazil				% o último idioma é o principal do documento
+]{abntex2}
+
+% ------------------------------------------------------
+% Pacotes básicos 
+
+\usepackage{unitins}
+\usepackage{lmodern}			% Suporte tipografico completo
+\renewcommand{\familydefault}{\sfdefault} % Define Arial (Sans-Serif) como fonte padrao do documento
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+\usepackage{lastpage}			% Usado pela Ficha catalográfica
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage[table,xcdraw]{xcolor} % Controle avançado de cores (substitui 'color' e integra tabelas)
+\definecolor{lightgray}{gray}{0.9}
+
+\usepackage{graphicx}			% Inclusão de gráficos
+\usepackage{subcaption} 		% Subfiguras moderno (substitui subfig obsoleto)
+\usepackage{microtype} 			% para melhorias de justificação
+\usepackage{soul}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{spreadtab}
+\usepackage{multirow}
+\usepackage{amsthm}
+\usepackage{url}
+\usepackage{listings}
+
+\lstset{
+	basicstyle=\ttfamily\footnotesize,
+	breaklines=true,
+	breakatwhitespace=false,
+	columns=flexible,
+	frame=single,
+	numbers=left,
+	numberstyle=\tiny,
+	xleftmargin=1.5em,
+	framexleftmargin=1em,
+	showstringspaces=false,
+	tabsize=2
+}
+
+% ------------------------------------------------------
+
+\usepackage{hyperref}
+
+% -----------------------------------------------
+% Pacotes de citações
+
+\usepackage[alf,abnt-etal-list=2,abnt-repeated-author-omit=yes]{abntex2cite}	% Citações padrão ABNT
+\graphicspath{{imagens/}}           % Adicionar imagens
+
+% --------------------------------------------
+
+% ----------------------------------
+%INCLUDE PDF 
+\usepackage{pdfpages}
+% ----------------------------------
+
+% ----------------------------------------
+% LONG TABLE - TABELA LONGA 
+
+%\usepackage[margin=1in]{geometry}
+\usepackage{longtable,tabularx,ltxtable}
+
+\usepackage{threeparttablex} % for "ThreePartTable" environment
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.18}
+\usepackage{filecontents}
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{float}
+
+\citeoption{abnt-etal-cite=2}
+% ---------------------------------------
+
+\usepackage[running]{lineno}
+
+% Dados do trabalho
+\titulo{CONTROLE DE ACESSO IOT NA GESTÃO IMOBILIÁRIA VIA DSR}
+\autor{ALÊKSON CASTRO DE SOUZA}
+\local{Palmas}
+\data{2026}
+\orientador{Profa. Me. Tamirys Virgulino}
+\instituicao{
+Universidade Estadual do Tocantins\\
+Curso de Sistemas de Informação
+}
+
+\tipotrabalho{Trabalho de Conclusão de Curso}
+
+\preambulo{Trabalho de Conclusão de Curso apresentado ao Curso de Sistemas de Informação da Universidade Estadual do Tocantins como requisito parcial para obtenção do título de Bacharel.}
+
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+
+\imprimircapa
+\imprimirfolhaderosto
+\imprimirfichacatalografica
+\imprimirfolhadeaprovacao
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+% \pretextual
+% ----------------------------------------------------------
+
+\include{pretextuais_resumo}
+\include{pretextuais_siglas}
+
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+
+\textual
+
+\include{capitulo1_introducao}
+\include{capitulo2_fundamentacao}
+\include{capitulo3_metodologia}
+\include{capitulo4_resultados}
+\include{capitulo5_conclusao}
+
+% ----------------------------------------------------------
+
+\postextual
+
+% ----------------------------------------------------------
+% Referências bibliográficas
+% ----------------------------------------------------------
+%\bibliography{bibliografia}
+\bibliography{referencias}
+% ----------------------------------------------------------
+
+%---------------------------------------------------------------------
+% INDICE REMISSIVO (descomente caso utilize \makeindex e \index)
+%---------------------------------------------------------------------
+%\phantompart
+%\printindex
+%---------------------------------------------------------------------
+
+\end{document}

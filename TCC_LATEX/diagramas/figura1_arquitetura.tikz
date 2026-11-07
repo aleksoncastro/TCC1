@@ -1,0 +1,81 @@
+\begin{tikzpicture}[
+    scale=0.92,
+    every node/.style={transform shape},
+    domain_box/.style={draw=black!75, thick, rounded corners=6pt, fill=black!2},
+    domain_title/.style={font=\sffamily\bfseries\footnotesize, text=black!90, anchor=north west},
+    comp_box/.style={draw=black!80, fill=white, rounded corners=3pt, thick, minimum width=3.0cm, minimum height=0.95cm, align=center, font=\sffamily\scriptsize},
+    flow_arrow/.style={->, >=Stealth, thick, draw=black!85},
+    bi_arrow/.style={<->, >=Stealth, thick, draw=black!85},
+    flow_label/.style={font=\sffamily\tiny\bfseries, fill=white, inner sep=2pt, align=center}
+]
+
+% ============================================================
+% DOMÍNIO 1: NUVEM / SERVIDOR IMOBILIÁRIA
+% ============================================================
+\draw[domain_box] (0, 0.5) rectangle (4.2, -7.0);
+\node[domain_title] at (0.15, 0.35) {Nuvem / Servidor Imobiliária};
+
+\node[comp_box] (pap) at (2.1, -0.6) {\textbf{PAP}\\(Painel de Gestão)};
+\node[comp_box] (pip) at (2.1, -1.8) {\textbf{PIP}\\(Banco de Atributos)};
+\node[comp_box] (pdp) at (2.1, -3.1) {\textbf{PDP}\\(Motor ABAC FastAPI)};
+\node[comp_box] (crypto) at (2.1, -4.4) {\textbf{Módulo Criptográfico}\\Ed25519 (Chave Privada)};
+\node[comp_box] (mqtt) at (2.1, -6.1) {\textbf{Broker MQTT}\\Mosquitto (Logs/Auditoria)};
+
+% Conexões internas Nuvem
+\draw[flow_arrow] (pap) -- (pdp);
+\draw[flow_arrow] (pip) -- (pdp);
+\draw[flow_arrow] (pdp) -- (crypto);
+
+% ============================================================
+% DOMÍNIO 2: SMARTPHONE DO CORRETOR
+% ============================================================
+\draw[domain_box] (5.2, 0.5) rectangle (9.2, -7.0);
+\node[domain_title] at (5.35, 0.35) {Smartphone do Corretor (4G/5G)};
+
+\node[comp_box] (app) at (7.2, -2.5) {\textbf{WebApp / App Móvel}\\Interface do Corretor};
+\node[comp_box] (cache) at (7.2, -4.4) {\textbf{Cache Local}\\de Tokens Assinados};
+
+% Conexão interna Smartphone
+\draw[bi_arrow] (app) -- (cache);
+
+% ============================================================
+% DOMÍNIO 3: IMÓVEL DESOCUPADO (OFFLINE)
+% ============================================================
+\draw[domain_box] (10.2, 0.5) rectangle (14.4, -7.0);
+\node[domain_title] at (10.35, 0.35) {Imóvel Desocupado (Offline)};
+
+\node[comp_box] (pep) at (12.3, -2.5) {\textbf{ESP32 DevKit v1}\\Smart Lock (PEP Borda)};
+\node[comp_box] (pubkey) at (12.3, -3.8) {\textbf{Chave Pública Ed25519}\\(Memória ROM Segura)};
+\node[comp_box] (rele) at (12.3, -5.0) {\textbf{Módulo Relé}\\Solenoide 12V};
+\node[comp_box] (led) at (12.3, -6.2) {\textbf{Sinalizadores}\\LED Verde / Buzzer};
+
+% Conexões internas Imóvel
+\draw[bi_arrow] (pep) -- (pubkey);
+\draw[flow_arrow] (pep.east) to[out=0, in=0] (rele.east);
+\draw[flow_arrow] (rele) -- (led);
+
+% ============================================================
+% FLUXOS INTER-DOMÍNIOS (PASSOS NUMERADOS 1 A 6)
+% ============================================================
+
+% Passo 1: Solicitação 4G (App -> PDP)
+\draw[flow_arrow] (app.west) to[out=160, in=20] node[flow_label, above=1pt] {1. Solicitação de visita (4G/HTTPS)} (pdp.east);
+
+% Passo 2: Emissão do Token (PDP -> App)
+\draw[flow_arrow] (crypto.east) to[out=10, in=200] node[flow_label, below=1pt] {2. Emissão Token Ed25519} (app.south west);
+
+% Passo 3: Apresentação via QR Code offline (App -> ESP32)
+\draw[flow_arrow] (app.east) -- node[flow_label, above=1pt] {3. Leitura óptica QR Code\\(100\% Offline)} (pep.west);
+
+% Passo 4: Validação (indicador interno no nó)
+\node[flow_label, font=\sffamily\tiny] at (13.7, -3.15) {4. Validação\\Offline};
+
+% Passo 5: Acionamento Relé
+\node[flow_label, font=\sffamily\tiny] at (13.8, -4.4) {5. Pulso\\5s};
+
+% Passo 6: Sincronização Assíncrona MQTT (Smartphone -> Nuvem)
+% A seta sai do smartphone (portador de dados) para o broker na nuvem
+\draw[flow_arrow] (cache.west) to[out=190, in=0] node[flow_label, above=1pt] {6. Sincronização assíncrona de auditoria\\via canal celular 4G (MQTT QoS 1)} (mqtt.east);
+
+\end{tikzpicture}
+
