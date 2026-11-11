@@ -45,7 +45,7 @@ Projetar e avaliar, por meio da metodologia \textit{Design Science Research} (DS
 \begin{enumerate}
     \item \textbf{Mapear o estado da arte} em autenticação offline, mensageria leve com MQTT (\textit{Message Queuing Telemetry Transport}) e criptografia de curva elíptica (ECC -- \textit{Elliptic Curve Cryptography}), de modo a fundamentar as decisões arquiteturais da proposta.
     \item \textbf{Modelar a arquitetura} do sistema em camadas, integrando controle de acesso baseado em atributos (ABAC contextual -- \textit{Attribute-Based Access Control}) a tokens Ed25519 verificáveis offline.
-    \item \textbf{Implementar o protótipo simulado} cobrindo os cenários de acesso concedido, negado por violação de atributo e revogado.
+    \item \textbf{Implementar o protótipo simulado} cobrindo os cenários de acesso concedido, negado por inconsistência de atributos e revogação de permissões, diferenciando o bloqueio imediato na emissão em nuvem da contenção temporal por expiração (TTL) no nó offline.
     \item \textbf{Avaliar o protótipo} quanto à latência de verificação offline da assinatura Ed25519 no microcontrolador e à latência de comunicação MQTT na fase de emissão do token, além da eficácia na contenção de acessos indevidos.
 \end{enumerate}
 
@@ -67,4 +67,4 @@ Os problemas mapeados na contextualização não são independentes: a falha ope
 \label{sec:estrutura}
 % ============================================================
 
-O trabalho organiza-se em cinco capítulos: o Capítulo \ref{cap:fundamentacao} apresenta a fundamentação teórica e os trabalhos correlatos; o Capítulo \ref{cap:metodologia} descreve o método DSR adotado; o Capítulo \ref{cap:resultados} apresenta a arquitetura, o protótipo simulado e a avaliação experimental; e o Capítulo \ref{cap:conclusao} sintetiza as contribuições e propõe trabalhos futuros.
+O trabalho organiza-se em cinco capítulos: o Capítulo \ref{cap:fundamentacao} apresenta a fundamentação teórica e os trabalhos correlatos; o Capítulo \ref{cap:metodologia} descreve o método DSR adotado; o Capítulo \ref{cap:resultados} apresenta a concepção arquitetural do artefato e a projeção dos resultados esperados; e o Capítulo \ref{cap:conclusao} sintetiza as contribuições e propõe trabalhos futuros.

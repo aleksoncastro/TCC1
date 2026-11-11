@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.27)  6 NOV 2026 21:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.27)  9 NOV 2026 20:55
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1393,20 +1393,20 @@ Cap\'{\i }tulo 1.
 [10
 
 
-] [11]) [12]
+] [11]) [12] [13]
 \openout2 = `capitulo2_fundamentacao.aux'.
 
  (capitulo2_fundamentacao.tex
 Cap\'{\i }tulo 2.
-[13
+[14
 
 
 
 
-] [14]
+] [15]
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <14.4> on input line 59.
- [15] [16]
+ [16] [17]
 Underfull \hbox (badness 3260) in paragraph at lines 115--115
 \T1/lmss/m/n/10 (+20) ter-cei-ros (\T1/lmss/m/sl/10 (+20) shoul-der sur-fing\T1/lmss/m/n/10 (+20) )
  []
@@ -1421,7 +1421,7 @@ Underfull \hbox (badness 7558) in paragraph at lines 115--115
 []|\T1/lmss/bx/n/10 (+20) Artefato pro-posto
  []
 
-[17] [18]
+[18] [19]
 Underfull \hbox (badness 5374) in paragraph at lines 147--147
 []|\T1/lmss/m/n/10 (+20) HTTP / Web
  []
@@ -1491,7 +1491,7 @@ Underfull \hbox (badness 2753) in paragraph at lines 163--163
 []|\T1/lmss/bx/n/10 (+20) QR Code Of-
  []
 
-[19]
+[20]
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 181.
  (C:\Program Files\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
@@ -1500,52 +1500,56 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `lmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
- [20]
+ [21]
 LaTeX Font Info:    Font shape `T1/lmss/bx/it' in size <12> not available
 (Font)              Font shape `T1/lmss/bx/sl' tried instead on input line 196.
-) [21]
+) [22]
 \openout2 = `capitulo3_metodologia.aux'.
 
  (capitulo3_metodologia.tex
 Cap\'{\i }tulo 3.
-[22
+
+Underfull \hbox (badness 1831) in paragraph at lines 40--40
+[]|\T1/lmss/m/n/10 (+20) Seção []3.2.2[] e Se-
+ []
+
+[23
+
+
+
+
+] [24]
+Underfull \hbox (badness 10000) in paragraph at lines 108--108
+[]|\T1/lmss/m/n/10 (+20) Assinatura Cor-rom-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 108--108
+[]|\T1/lmss/m/n/10 (+20) Falha na ve-ri-fi-ca-ção
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 139--139
+[]|\T1/lmss/m/n/10 (+20) Amostragem via ro-tina na-tiva
+ []
+
+) [25] [26{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}]
+\openout2 = `capitulo4_resultados.aux'.
+
+ (capitulo4_resultados.tex
+Cap\'{\i }tulo 4.
+<imagens/01_arquitetura_visao_geral.jpg, id=559, 331.4784pt x 185.0112pt>
+File: imagens/01_arquitetura_visao_geral.jpg Graphic file (type jpg)
+<use imagens/01_arquitetura_visao_geral.jpg>
+Package pdftex.def Info: imagens/01_arquitetura_visao_geral.jpg  used on input line 33.
+(pdftex.def)             Requested size: 418.59917pt x 233.64043pt.
+[27
 
 
 
 
 ]
-Underfull \hbox (badness 1867) in paragraph at lines 49--49
-[]|\T1/lmss/bx/n/10 (+20) Etapa Con-cei-tual ([]PEF-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 49--49
-[]|\T1/lmss/m/n/10 (+20) Seção []3.2.4[] e
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 49--49
-[]|\T1/lmss/m/n/10 (+20) Concepção e De-sen-vol-vi-
- []
-
-
-Underfull \hbox (badness 2027) in paragraph at lines 49--49
-\T1/lmss/m/n/10 (+20) im-ple-men-ta-ção do es-quema crip-to-grá-fico
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 49--49
-[]|\T1/lmss/m/n/10 (+20) Monografia com-
- []
-
-[23] [24]
-<imagens/01_arquitetura_visao_geral.jpg, id=528, 331.4784pt x 185.0112pt>
-File: imagens/01_arquitetura_visao_geral.jpg Graphic file (type jpg)
-<use imagens/01_arquitetura_visao_geral.jpg>
-Package pdftex.def Info: imagens/01_arquitetura_visao_geral.jpg  used on input line 127.
-(pdftex.def)             Requested size: 418.59917pt x 233.64043pt.
- [25]
-LaTeX Font Info:    Trying to load font information for TS1+lmss on input line 134.
+LaTeX Font Info:    Trying to load font information for TS1+lmss on input line 40.
  (C:\Program Files\MiKTeX\tex/latex/lm\ts1lmss.fd
 File: ts1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
@@ -1554,130 +1558,154 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 
-Overfull \hbox (15.06906pt too wide) in paragraph at lines 135--136
+Overfull \hbox (15.06906pt too wide) in paragraph at lines 41--42
 []\T1/lmss/bx/n/12 (-20) Smartphone do Cor-re-tor: \T1/lmss/m/n/12 (-20) Atua como ele-mento in-ter-me-di-á-rio e por-ta-dor (\T1/lmss/m/sl/12 (-20) data mule/carrier\T1/lmss/m/n/12 (-20) )
  []
 
-[26{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc} <./imagens/01_arquitetura_visao_geral.jpg>] [27]
-Underfull \hbox (badness 10000) in paragraph at lines 204--204
+[28{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc} <./imagens/01_arquitetura_visao_geral.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 101--101
 []|\T1/lmss/m/n/10 (+20) Enum: \T1/lmtt/m/n/10 DISPONIVEL_VENDA\T1/lmss/m/n/10 (+20) , \T1/lmtt/m/n/10 LOCADO\T1/lmss/m/n/10 (+20) ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 204--204
+Underfull \hbox (badness 10000) in paragraph at lines 101--101
 []|\T1/lmss/m/n/10 (+20) Enum: \T1/lmtt/m/n/10 SOLICITAR_TOKEN\T1/lmss/m/n/10 (+20) ,
  []
 
-<imagens/03_modelo_abac_nist.jpg, id=561, 331.4784pt x 185.0112pt>
+<imagens/03_modelo_abac_nist.jpg, id=578, 331.4784pt x 185.0112pt>
 File: imagens/03_modelo_abac_nist.jpg Graphic file (type jpg)
 <use imagens/03_modelo_abac_nist.jpg>
-Package pdftex.def Info: imagens/03_modelo_abac_nist.jpg  used on input line 217.
+Package pdftex.def Info: imagens/03_modelo_abac_nist.jpg  used on input line 114.
 (pdftex.def)             Requested size: 354.89944pt x 198.08705pt.
-[28{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}] [29 <./imagens/03_modelo_abac_nist.jpg>] (C:\Program Files\MiKTeX\tex/latex/listings\lstlang1.sty
+[29] [30 <./imagens/03_modelo_abac_nist.jpg>] (C:\Program Files\MiKTeX\tex/latex/listings\lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
 )
-Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 235.
- [30]
-Underfull \hbox (badness 2547) in paragraph at lines 308--308
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 132.
+ [31]
+Underfull \hbox (badness 2547) in paragraph at lines 205--205
 []|\T1/lmss/m/n/10 (+20) Criptograficamente equi-va-
  []
 
 
-Underfull \hbox (badness 1057) in paragraph at lines 308--308
+Underfull \hbox (badness 1057) in paragraph at lines 205--205
 []|\T1/lmss/m/n/10 (+20) Imunidade a va-ri-a-ções de
  []
 
-[31] [32]
-<imagens/02_fluxo_validacao_offline.jpg, id=650, 215.8464pt x 289.08pt>
+[32]
+<imagens/02_fluxo_validacao_offline.jpg, id=648, 215.8464pt x 289.08pt>
 File: imagens/02_fluxo_validacao_offline.jpg Graphic file (type jpg)
 <use imagens/02_fluxo_validacao_offline.jpg>
-Package pdftex.def Info: imagens/02_fluxo_validacao_offline.jpg  used on input line 365.
+Package pdftex.def Info: imagens/02_fluxo_validacao_offline.jpg  used on input line 262.
 (pdftex.def)             Requested size: 400.40222pt x 536.25406pt.
- [33 <./imagens/02_fluxo_validacao_offline.jpg>]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 371.
-<imagens/04_diagrama_sequencia_visita.jpg, id=664, 331.4784pt x 185.0112pt>
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 268.
+ [33] [34 <./imagens/02_fluxo_validacao_offline.jpg>]
+Underfull \hbox (badness 1158) in paragraph at lines 296--296
+[]|\T1/lmss/m/n/10 (+20) O hash \T1/lmtt/m/n/10 fp \T1/lmss/m/n/10 (+20) vin-cula o to-ken ao
+ []
+
+<imagens/04_diagrama_sequencia_visita.jpg, id=678, 331.4784pt x 185.0112pt>
 File: imagens/04_diagrama_sequencia_visita.jpg Graphic file (type jpg)
 <use imagens/04_diagrama_sequencia_visita.jpg>
-Package pdftex.def Info: imagens/04_diagrama_sequencia_visita.jpg  used on input line 416.
+Package pdftex.def Info: imagens/04_diagrama_sequencia_visita.jpg  used on input line 313.
 (pdftex.def)             Requested size: 432.24861pt x 241.25981pt.
- [34] [35 <./imagens/04_diagrama_sequencia_visita.jpg>] [36]
-Underfull \hbox (badness 3029) in paragraph at lines 480--480
+[35] [36 <./imagens/04_diagrama_sequencia_visita.jpg>] [37]
+Underfull \hbox (badness 3029) in paragraph at lines 377--377
 []|\T1/lmss/bx/n/10 (+20) Camada / Mó-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 480--480
+Underfull \hbox (badness 10000) in paragraph at lines 377--377
 []|\T1/lmss/m/n/10 (+20) Linguagem do
  []
 
 
-Underfull \hbox (badness 4608) in paragraph at lines 480--480
+Underfull \hbox (badness 4608) in paragraph at lines 377--377
 []|\T1/lmss/m/n/10 (+20) Biblioteca Crip-to-
  []
 
 
-Underfull \hbox (badness 3492) in paragraph at lines 480--480
+Underfull \hbox (badness 3492) in paragraph at lines 377--377
 []|\T1/lmss/m/n/10 (+20) Padrão aberto com su-porte na-tivo a MQTT
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 480--480
+Underfull \hbox (badness 10000) in paragraph at lines 377--377
 []|\T1/lmss/m/n/10 (+20) Ferramentas de
  []
 
-[37] (C:\Program Files\MiKTeX\tex/latex/listings\lstlang1.sty
+
+Overfull \hbox (56.67593pt too wide) in paragraph at lines 387--388
+\T1/lmss/m/n/12 (-20) as es-tru-tu-ras da bi-bli-o-teca \T1/lmtt/m/n/12 mbedtls \T1/lmss/m/n/12 (-20) e dis-po-ni-bi-liza a fun-ção \T1/lmtt/m/n/12 verify_ed25519_signature(payload,
+ []
+
+[38] (C:\Program Files\MiKTeX\tex/latex/listings\lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
 ) (C:\Program Files\MiKTeX\tex/latex/listings\lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
-) [38]
-Underfull \hbox (badness 10000) in paragraph at lines 575--575
+) [39]
+Underfull \hbox (badness 10000) in paragraph at lines 461--461
 []|\T1/lmss/m/n/10 (+20) Porta Se-rial / Lei-tor
  []
 
-[39] [40]
-Underfull \hbox (badness 3930) in paragraph at lines 643--643
-[]|\T1/lmss/m/n/10 (+20) Detecção do iden-ti-fi-ca-dor
- []
-
-[41]
-Underfull \hbox (badness 1975) in paragraph at lines 687--687
-[]|\T1/lmss/m/n/10 (+20) Tempo de Ve-ri-fi-ca-ção no
+[40] [41] [42] [43] [44]
+Underfull \hbox (badness 3118) in paragraph at lines 597--597
+[]|\T1/lmss/m/n/10 (+20) Verificação no ESP32
  []
 
 
-Underfull \hbox (badness 2818) in paragraph at lines 687--687
-[]|\T1/lmss/m/n/10 (+20) Leitura com fun-ção \T1/lmtt/m/n/10 micros() \T1/lmss/m/n/10 (+20) no
+Underfull \hbox (badness 10000) in paragraph at lines 597--597
+[]|\T1/lmss/m/n/10 (+20) Desempenho de cur-vas elíp-ti-cas
  []
 
 
-Underfull \hbox (badness 3189) in paragraph at lines 687--687
-\T1/lmss/m/n/10 (+20) firmware an-tes e após ve-ri-fi-ca-ção
+Underfull \hbox (badness 1748) in paragraph at lines 597--597
+\T1/lmss/m/n/10 (+20) tí-vel ao usu-á-rio na
  []
 
-) [42] [43]
-\openout2 = `capitulo4_resultados.aux'.
 
- (capitulo4_resultados.tex
-Cap\'{\i }tulo 4.
-) [44
+Underfull \hbox (badness 1077) in paragraph at lines 597--597
+\T1/lmss/m/n/10 (+20) MA-NA-SATHIEN; TRE-E-BU-PA-CHAT-
+ []
 
 
+Underfull \hbox (badness 7925) in paragraph at lines 597--597
+[]|\T1/lmss/m/n/10 (+20) Memória RAM Heap
+ []
 
 
-]
+Underfull \hbox (badness 10000) in paragraph at lines 597--597
+[]|\T1/lmss/m/n/10 (+20) Folga con-tí-nua $\OML/lmm/m/it/10 >$
+ []
+
+
+Underfull \hbox (badness 2644) in paragraph at lines 597--597
+\T1/lmss/m/n/10 (+20) 150 KB sem va-za-
+ []
+
+
+Underfull \hbox (badness 1596) in paragraph at lines 597--597
+[]|\T1/lmss/m/n/10 (+20) Ocupação Flash ROM
+ []
+
+
+Underfull \hbox (badness 1454) in paragraph at lines 597--597
+\T1/lmss/m/n/10 (+20) po-si-ti-vos de con-ces-
+ []
+
+[45]) [46]
 \openout2 = `capitulo5_conclusao.aux'.
 
  (capitulo5_conclusao.tex
 Cap\'{\i }tulo 5.
-) [45
+) [47
 
 
 
 
 ] (main.bbl
 bibitemlist
-) [46
+) [48
 
 
 
@@ -1692,19 +1720,23 @@ enddocument/afterlastpage (AED): lastpage setting LastPage.
 LaTeX2e <2025-11-01>
 L3 programming layer <2020/03/25>
  ***********
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
  ) 
 Here is how much of TeX's memory you used:
- 46806 strings out of 467871
- 1000574 string characters out of 5428433
- 2099212 words of memory out of 5000000
- 74233 multiletter control sequences out of 15000+600000
- 717649 words of font info for 256 fonts, out of 8000000 for 9000
+ 46821 strings out of 467871
+ 1000973 string characters out of 5428433
+ 2040237 words of memory out of 5000000
+ 74244 multiletter control sequences out of 15000+600000
+ 718253 words of font info for 260 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 114i,13n,122p,1725b,2081s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 114i,13n,122p,1725b,2211s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmss10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmss12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmss17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmss8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmssbo10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmssbx10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmsso10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmsso12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtti10.pfb>
-Output written on main.pdf (47 pages, 2228187 bytes).
+Output written on main.pdf (49 pages, 2248088 bytes).
 PDF statistics:
- 1191 PDF objects out of 1200 (max. 8388607)
- 306 named destinations out of 1000 (max. 500000)
- 49814 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 1289 PDF objects out of 1440 (max. 8388607)
+ 302 named destinations out of 1000 (max. 500000)
+ 49822 words of extra memory for PDF output out of 51595 (max. 10000000)
 
